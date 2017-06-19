@@ -34,7 +34,7 @@ function varargout = Bispectrum(varargin)
 
 % Edit the above text to modify the response to help Bispectrum
 
-% Last Modified by GUIDE v2.5 15-Jun-2017 18:01:46
+% Last Modified by GUIDE v2.5 16-Jun-2017 18:00:21
 %*************************************************************************%
 %                BEGIN initialization code - DO NOT EDIT                  %
 %                ----------------------------------------                 %
@@ -395,94 +395,6 @@ function wavlet_transform_Callback(hObject, eventdata, handles)
     display('Finished calculating TPC');
     %---------------
     
-    %Surrogate Calculation
-    display('Calculating surrogates');
-    
-    surrogate_count = str2double(get(handles.surrogate_count,'String'));
-    items = get(handles.surrogate_type,'String');
-    index_selected = get(handles.surrogate_type,'Value');
-    surrogate_type = items{index_selected};
-    
-    handles.surrogates = surrogate(sig(1,:),surrogate_count,surrogate_type);
-    TPC_surr_avg_arr = cell(surrogate_count,1);
-    
-    if(isnan(fmax)&& isnan(fmin))
-        if(isnan(fc))
-            for p = 1:surrogate_count
-            sprintf('Calculating Wavelet Transform for surrogate:%d','p');
-            [WT_surrogate, handles.freqarr]=wt(handles.surrogates(p,:),fs,'CutEdges',cutedges_selected,...
-                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected); 
-            TPC_surrogate = tlphcoh(handles.WT{1,1},WT_surrogate,handles.freqarr,fs);
-            TPC_surr_avg_arr{p,1} = nanmean(TPC_surrogate.');     
-            end
-        else
-            for p = 1:surrogate_count
-            sprintf('Calculating Wavelet Transform for surrogate:%d','p');
-            [WT_surrogate,handles.freqarr]=wt(handles.surrogates(p,:),fs,'CutEdges',cutedges_selected,...
-                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected,'f0',fc); 
-            TPC_surrogate = tlphcoh(handles.WT{1,1},WT_surrogate,handles.freqarr,fs);
-            TPC_surr_avg_arr{p,1} = nanmean(TPC_surrogate.');     
-            end
-        end
-    elseif(isnan(fmax))
-        if(isnan(fc))
-            for p = 1:surrogate_count
-            spintf('Calculating Wavelet Transform for surrogate:%d','p');
-            [WT_surrogate,handles.freqarr]=wt(handles.surrogates(p,:),fs,'fmin',fmin,'CutEdges',cutedges_selected,...
-                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected);
-            TPC_surrogate = tlphcoh(handles.WT{1,1},WT_surrogate,handles.freqarr,fs);
-            TPC_surr_avg_arr{p,1} = nanmean(TPC_surrogate.');     
-            end
-        else
-            for p = 1:surrogate_count
-            sprintf('Calculating Wavelet Transform for surrogate:%d','p');
-            [WT_surrogate,handles.freqarr]=wt(handles.surrogates(p,:),fs,'fmin',fmin,'CutEdges',cutedges_selected,...
-                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected,'f0',fc);
-            TPC_surrogate = tlphcoh(handles.WT{1,1},WT_surrogate,handles.freqarr,fs);
-            TPC_surr_avg_arr{p,1} = nanmean(TPC_surrogate.');     
-            end
-        end
-    elseif(isnan(fmin))
-        if(isnan(fc))
-            for p = 1:surrogate_count
-            spintf('Calculating Wavelet Transform for surrogate:%d','p');
-            [WT_surrogate,handles.freqarr]=wt(handles.surrogates(p,:),fs,'fmax',fmax,'CutEdges',cutedges_selected,...
-                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected);
-            TPC_surrogate = tlphcoh(handles.WT{1,1},WT_surrogate,handles.freqarr,fs);
-            TPC_surr_avg_arr{p,1} = nanmean(TPC_surrogate.');     
-            end
-        else
-            for p = 1:surrogate_count
-            sprintf('Calculating Wavelet Transform for surrogate:%d','p');
-            [WT_surrogate,handles.freqarr]=wt(handles.surrogates(p,:),fs,'fmax',fmax,'CutEdges',cutedges_selected,...
-                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected,'f0',fc);
-            TPC_surrogate = tlphcoh(handles.WT{1,1},WT_surrogate{p,1},handles.freqarr,fs);
-            TPC_surr_avg_arr{p,1} = nanmean(TPC_surrogate.');     
-            end
-        end
-    else
-        if(isnan(fc))
-            for p = 1:surrogate_count
-            spintf('Calculating Wavelet Transform for surrogate:%d','p');
-            [WT_surrogate,handles.freqarr]=wt(handles.surrogates(p,:),fs,'fmin',fmin,'fmax',fmax,'CutEdges',cutedges_selected,...
-                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected);
-            TPC_surrogate = tlphcoh(handles.WT{1,1},WT_surrogate{p,1},freqarr,fs);
-            TPC_surr_avg_arr{p,1} = nanmean(TPC_surrogate.');     
-            end
-        else
-            for p = 1:surrogate_count
-            sprintf('Calculating Wavelet Transform for surrogate:%d','p');
-            [WT_surrogate,handles.freqarr]=wt(handles.surrogates(p,:),fs,'fmin',fmin,'fmax',fmax,'CutEdges',cutedges_selected,...
-                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected,'f0',fc);
-            TPC_surrogate = tlphcoh(handles.WT{1,1},WT_surrogate,handles.freqarr,fs);
-            TPC_surr_avg_arr{p,1} = nanmean(TPC_surrogate.');     
-            end
-        end
-    end
-        
-    display('Finished calculating surrogates');
-    %---------------------
-    
     handles.amp_WT = cell(n,1);
     handles.pow_WT = cell(n,1);
     handles.pow_arr = cell(n,1);
@@ -496,86 +408,67 @@ function wavlet_transform_Callback(hObject, eventdata, handles)
         handles.pow_arr{p,1} = nanmean(handles.pow_WT{p,1}.');%Calculating Average Power
         handles.amp_arr{p,1} = nanmean(handles.amp_WT{p,1}.');%Calculating Average Amplitude  
     end
-    
-    TPC_surr_avg_arr = cell2mat(TPC_surr_avg_arr);
-    
-    surrogate_analysis = get(handles.surrogate_analysis,'Value');
-    
-    if(surrogate_analysis == 2)
-        surrogate_percentile = str2double(get(handles.surrogate_percentile,'String'));
-        handles.TPC_surr_avg_max = prctile(TPC_surr_avg_arr,surrogate_percentile);
-        display('percentile');
-    elseif(surrogate_analysis == 1)
-        handles.TPC_surr_avg_max = max(TPC_surr_avg_arr);
-    end
-    
+
+    %Calculating the Bispectrum
+    [handles.bxxx, handles.bppp, handles.bpxx, handles.bxpp] = bispectrum(handles.sig(1,:), handles.sig(2,:), handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, .01, 5, fs, fc);
+    %[bxxx bppp bpxx bxpp] = bispectrum(x, p, wt_1, wt_2, freqarr, .01, 5, 100, 1);
     guidata(hObject,handles);
     display_type_Callback(hObject, eventdata, handles);
     guidata(hObject,handles);
     set(handles.display_type,'Enable','on');
     set(handles.intervals,'Enable','on');
-    
-    
-    
-function plot_Callback(hObject, eventdata, handles)
-%Plot button for faster plotting and reming the need to calculate wavelet tranform everytime    
-    set(handles.status,'String','Plotting Data');
+  
+function display_type_Callback(hObject, eventdata, handles)
+tic
+display_selection = get(hObject,'Value');
 
-    sig = handles.sig;
-    fs = str2double(get(handles.sampling_freq,'String'));
-    xl = csv_to_mvar(get(handles.xlim,'String'));
-    n = str2double(get(handles.sampling_rate,'String'));
-    display_selected = get(handles.display_type,'Value');
-        
-    xl = xl.*fs;
-    xl(2) = min(xl(2),size(sig,2));
-    xl(1) = max(xl(1),1);
-    xl = xl./fs;
-    
-    time_axis = xl(1):1/fs:xl(2);
+set(handles.status,'String','Plotting Data');
 
-    if(display_selected == 1 || display_selected == 2) 
-        
-        %Deciding the plot type
+sig = handles.sig;
+fs = str2double(get(handles.sampling_freq,'String'));
+n = str2double(get(handles.sampling_rate,'String'));
+xl = csv_to_mvar(get(handles.xlim,'String'));
+xl = xl.*fs;
+xl(2) = min(xl(2),size(sig,2));
+xl(1) = max(xl(1),1);
+xl = xl./fs;
+time_axis = xl(1):1/fs:xl(2);
+
+if (display_selection == 1 || display_selection == 2) && isfield(handles,'WT')
+    
+    clear_pane_axes(handles.wt_pane);
+    %Deciding the plot type
         
         %Actual Plotting    
         %-------------------------Surf Plot------------------------------------
         
         position = [0.06 0.122 0.6 0.849];
         handles.plot3d = subplot(1,3,[1 2],'Parent',handles.wt_pane,'position',position);
+        position = [.75 .122 .196 .849];
+        handles.plot_pow = subplot(1,3,3,'Parent',handles.wt_pane,'position',position);
         
-        if(handles.plot_type == 1)
-            %WT = handles.pow_WT{display_selected,1}; 
-            handles.peak_value = max(handles.pow_WT{display_selected,1}(:))+.1;
-            pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{display_selected,1}(1:end,1:n:end)); 
-        else
-            %WT = handles.amp_WT{display_selected,1};        
-            handles.peak_value = max(handles.amp_WT{display_selected,1}(:))+.1;
-            pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{display_selected,1}(1:end,1:n:end)); 
-        end
+        if(handles.plot_type == 1)           
+            handles.peak_value = max(handles.pow_WT{display_selection,1}(:))+.1;
+            pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{display_selection,1}(1:end,1:n:end)); 
+            zlabel(handles.plot3d,'Power','fontweight','b','fontsize',12);
+            plot(handles.plot_pow ,handles.pow_arr{display_selection,1}, handles.freqarr,'-k','LineWidth',3 );
+        else            
+            handles.peak_value = max(handles.amp_WT{display_selection,1}(:))+.1;
+            pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{display_selection,1}(1:end,1:n:end)); 
+            zlabel(handles.plot3d,'Amplitude','fontweight','b','fontsize',12);
+            plot(handles.plot_pow ,handles.amp_arr{display_selection,1}, handles.freqarr,'-k','LineWidth',3 );
+        end 
         
-        %pcolor(handles.plot3d, time_axis(1:n:end) ,freqarr, WT(1:end,1:n:end)); 
-        shading(handles.plot3d,'interp');
-        
+        shading(handles.plot3d,'interp');        
         set(handles.plot3d,'yscale','log');
         set(handles.plot3d,'ylim',[min(handles.freqarr) max(handles.freqarr)]);%making the axes tight
         set(handles.plot3d,'xlim',[time_axis(1) time_axis(end)]);%making the axes tight
         xlabel(handles.plot3d,'Time (s)','fontweight','b','fontsize',12);
         ylabel(handles.plot3d,'Frequency (Hz)','fontweight','b','fontsize',12);
         
-        position = [.75 .122 .196 .849];
-        handles.plot_pow = subplot(1,3,3,'Parent',handles.wt_pane,'position',position);
-        if(handles.plot_type == 1)       
-            zlabel(handles.plot3d,'Power','fontweight','b','fontsize',12);
-            plot(handles.plot_pow ,handles.pow_arr{display_selected,1}, handles.freqarr,'-k','LineWidth',3 );
-        else   
-            zlabel(handles.plot3d,'Amplitude','fontweight','b','fontsize',12);
-            plot(handles.plot_pow ,handles.amp_arr{display_selected,1}, handles.freqarr,'-k','LineWidth',3 );
-        end
-       
-        %------------------------Power Plot------------------------------------        
-        set(handles.plot_pow,'yscale','log');
-        
+        %------------------------Power Plot------------------------------------      
+                        
+        set(handles.plot_pow,'yscale','log');        
         ylim(handles.plot_pow,[min(handles.freqarr) max(handles.freqarr)]);
         set(handles.status,'String','Done Plotting');
         if(handles.plot_type == 1)       
@@ -584,204 +477,85 @@ function plot_Callback(hObject, eventdata, handles)
             xlabel(handles.plot_pow,'Average Amplitude','fontweight','b','fontsize',12);
         end
         ylabel(handles.plot_pow,'Frequency (Hz)','fontweight','b','fontsize',12);
-    
-    elseif display_selected == 3 
-        
-        handles.peak_value = max(handles.TPC(:))+.1;
-        position = [0.06 0.122 0.6 0.849];
-        handles.plot3d = subplot(1,3,[1 2],'Parent',handles.wt_pane,'position',position);
-        
-        pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.TPC(1:end,1:n:end)); 
-        shading(handles.plot3d,'interp');
-        
-        set(handles.plot3d,'yscale','log');
-        set(handles.plot3d,'ylim',[min(handles.freqarr) max(handles.freqarr)]);%making the axes tight
-        set(handles.plot3d,'xlim',[time_axis(1) time_axis(end)]);%making the axes tight
-        xlabel(handles.plot3d,'Time (s)','fontweight','b','fontsize',12);
-        ylabel(handles.plot3d,'Frequency (Hz)','fontweight','b','fontsize',12);
-        
-        position = [.75 .122 .196 .849];
-        handles.plot_pow = subplot(1,3,3,'Parent',handles.wt_pane,'position',position);              
-        zlabel(handles.plot3d,'Coherence','fontweight','b','fontsize',12);
-        
-        hold(handles.plot_pow,'on');
-        plot(handles.plot_pow ,handles.time_avg_wpc, handles.freqarr,'LineWidth',2);
-        if(size(handles.TPC_surr_avg_max)>0)
-            plot(handles.plot_pow ,handles.TPC_surr_avg_max , handles.freqarr,'LineWidth',2);
+elseif display_selection == 3 || display_selection == 4 || display_selection == 5 || display_selection == 6
+     %Plotting bispectrum   
+        clear_pane_axes(handles.wt_pane);    
+        position = [0.06 0.17 0.432 0.8];
+        handles.bisp = axes('Parent',handles.wt_pane,'position',position);
+        position = [.56 .55 .42 .42];
+        handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position);
+        position = [.56 .09 .42 .42];
+        handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position);
+        if display_selection == 3
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxxx)
+            shading(handles.bisp,'interp');
+            %tightfig(handles.bisp);
+            set(handles.bisp,'yscale','log');
+            set(handles.bisp,'xscale','log');
+            %xlim(handles.bisp,[min(handles.bxxx(:)) , max(handles.bxxx(:))]);
+        elseif display_selection == 4
+            surf(handles.bisp, handles.freqarr, handles.freqarr, handles.bppp)
+            shading('interp');
+            set(handles.bisp,'yscale','log');
+            set(handles.bisp,'xscale','log');
+        elseif display_selection == 5
+            surf(handles.bisp, handles.freqarr, handles.freqarr, handles.bxpp)
+            shading('interp');
+            set(handles.bisp,'yscale','log');
+            set(handles.bisp,'xscale','log');
+        elseif display_selection == 6
+            surf(handles.bisp, handles.freqarr, handles.freqarr, handles.bpxx)
+            shading('interp');
+            set(handles.bisp,'yscale','log');
+            set(handles.bisp,'xscale','log');
         end
-        hold(handles.plot_pow,'off');
-       
-        %------------------------Power Plot------------------------------------        
-        set(handles.plot_pow,'yscale','log');     
-        ylim(handles.plot_pow,[min(handles.freqarr) max(handles.freqarr)]);
-        color_positive_breach(handles.freqarr,handles.time_avg_wpc, handles.TPC_surr_avg_max,'color','red','flipped');
-        set(handles.status,'String','Done Plotting');
-        xlabel(handles.plot_pow,'Average Coherence','fontweight','b','fontsize',12);
-        ylabel(handles.plot_pow,'Frequency (Hz)','fontweight','b','fontsize',12);
-        legend(handles.plot_pow,'Original Signal','Surrogate','Location','Best');
-    elseif display_selected == 4 
-         
-        if ~isfield(handles,'signal_index')
-            return;
-        end
-            
-%         if(handles.signal_index == 1)
-%             WT = pow_WT{handles.signal_index,1}; 
-%             handles.peak_value = max(WT(:))+.1;
-%         elseif(handles.signal_index == 2)
-%             WT = amp_WT{handles.signal_index,1};        
-%             handles.peak_value = max(WT(:))+.1;
-%         end        
-        
-        
-        if handles.signal_index == 1 || handles.signal_index == 2
-            if(handles.plot_type == 1)
-                %WT = handles.pow_WT{display_selected,1}; 
-                handles.peak_value = max(handles.pow_WT{handles.signal_index,1}(:))+.1;
-                pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{handles.signal_index,1}(1:end,1:n:end)); 
-            else
-                %WT = handles.amp_WT{display_selected,1};        
-                handles.peak_value = max(handles.amp_WT{handles.signal_index,1}(:))+.1;
-                pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{handles.signal_index,1}(1:end,1:n:end)); 
-            end
-            %pcolor(handles.plot3d, time_axis(1:n:end) ,freqarr, WT(1:end,1:n:end)); 
-            shading(handles.plot3d,'interp');
-           
-            set(handles.plot3d,'yscale','log');
-            set(handles.plot3d,'ylim',[min(handles.freqarr) max(handles.freqarr)]);%making the axes tight
-            set(handles.plot3d,'xlim',[time_axis(1) time_axis(end)]);%making the axes tight
-            set(handles.plot3d,'zdir','reverse');
-            view(handles.plot3d,90,-90);
-            if(handles.plot_type == 1)       
-                plot(handles.plot_pow ,handles.pow_arr{handles.signal_index,1}, handles.freqarr,'-k','LineWidth',3 );
-            else
-                plot(handles.plot_pow ,handles.amp_arr{handles.signal_index,1}, handles.freqarr,'-k','LineWidth',3 );
-            end            
-            view(handles.plot_pow,90,-90);
-           
-            %------------------------Power Plot------------------------------------        
-            set(handles.plot_pow,'yscale','log');
+%         plot(handles.bisp,rand(10));
+%         plot(handles.bisp_amp,rand(3));
+%         plot(handles.bisp_phase,rand(3));
+% Signal 1
+% Signal 2
+% bxxx
+% bppp
+% bxpp
+% bpxx
+% All plots
 
-            ylim(handles.plot_pow,[min(handles.freqarr) max(handles.freqarr)]);
-            set(handles.status,'String','Done Plotting');
-            guidata(hObject,handles);
-        elseif handles.signal_index == 3
-            handles.peak_value = max(handles.TPC(:))+.1;   
-            
-            pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.TPC(1:end,1:n:end)); 
-            shading(handles.plot3d,'interp');
-            
-            set(handles.plot3d,'yscale','log');
-            set(handles.plot3d,'ylim',[min(handles.freqarr) max(handles.freqarr)]);%making the axes tight
-            set(handles.plot3d,'xlim',[time_axis(1) time_axis(end)]);%making the axes tight
-            set(handles.plot3d,'zdir','reverse');
-            view(handles.plot3d,90,-90);
-            hold (handles.plot_pow,'on');
-            plot(handles.plot_pow ,handles.time_avg_wpc, handles.freqarr,'LineWidth',3 );
-            
-            if(size(handles.TPC_surr_avg_max)>0)
-                plot(handles.plot_pow ,handles.TPC_surr_avg_max , handles.freqarr,'LineWidth',1);
-            end
-            
-            set(handles.plot_pow,'yscale','log');     
-            ylim(handles.plot_pow,[min(handles.freqarr) max(handles.freqarr)]);
-            color_positive_breach(handles.freqarr,handles.time_avg_wpc, handles.TPC_surr_avg_max,'color','red','flipped');       
-            hold (handles.plot_pow,'off');
-            legend(handles.plot_pow,'Original Signal','Surrogate','Location','Best');
-            view(handles.plot_pow,90,-90);
-           
-            %------------------------Power Plot------------------------------------        
-            set(handles.plot_pow,'yscale','log');     
-            ylim(handles.plot_pow,[min(handles.freqarr) max(handles.freqarr)]);
-            set(handles.status,'String','Done Plotting');
-            
-        end
-    else 
-        display('Calculate Wavelet Tranform Before Plotting');
-    end
-    
-guidata(hObject,handles);
-
-function display_type_Callback(hObject, eventdata, handles)
-tic
-display_selection = get(hObject,'Value');
-
-set(handles.static_axis_label,'Visible','off');
-
-if (display_selection == 1 || display_selection == 2 || display_selection == 3) && isfield(handles,'WT')
-    
-    clear_pane_axes(handles.wt_pane);
-    plot_Callback(hObject, eventdata, handles);
-    
-elseif display_selection == 4 && isfield(handles,'WT')
-    tic
-    set(handles.static_axis_label,'Visible','on');
-    clear_pane_axes(handles.wt_pane);
-    set(handles.status,'String','Plotting Data');
-    clear_pane_axes(handles.wt_pane);
-    
-    position = [.07 .59 .27 .211];
-    wt_1 = axes('Parent',handles.wt_pane,'position',position);
-    position = [.07 .804 .27 .147];
-    avg_wt_1 = axes('Parent',handles.wt_pane,'position',position);
-    
-    
-    position = [.07 .15 .27 .23];
-    wt_2 = axes('Parent',handles.wt_pane,'position',position);
-    position = [.07 .384 .27 .147];
-    avg_wt_2 = axes('Parent',handles.wt_pane,'position',position);
-    	
-    
-    position = [.415 .15 .57 .6];
-    coherence = axes('Parent',handles.wt_pane,'position',position);
-    position = [.415 .766 .57 .215];
-    avg_coherence = axes('Parent',handles.wt_pane,'position',position);  
-    box on;
-    
-    handles.plot3d = wt_1;
-    handles.plot_pow = avg_wt_1;
-    handles.signal_index = 1;
-    
-    plot_Callback(hObject, eventdata, handles);
-    
-    
-    handles.plot3d = wt_2;
-    handles.plot_pow = avg_wt_2;
-    handles.signal_index = 2;
-    
-    plot_Callback(hObject, eventdata, handles);
-    
-    
-    handles.plot3d = coherence;
-    handles.plot_pow = avg_coherence;
-    handles.signal_index = 3;
-    
-    plot_Callback(hObject, eventdata, handles);
-    
-    set(wt_1,'yticklabel',[]);
-    set(avg_wt_1,'yticklabel',[])
-    set(avg_wt_2,'yticklabel',[])
-    set(avg_coherence,'yticklabel',[])
-    
-    xlabel(wt_1,'Time (s)','fontweight','b');
-    xlabel(wt_2,'Time (s)','fontweight','b');
-    xlabel(avg_wt_1,'Average','fontweight','b');
-    xlabel(avg_wt_2,'Average','fontweight','b');
-    xlabel(coherence,'Time (s)','fontweight','b')
-    xlabel(avg_coherence,'Avg. Coherence','fontweight','b')
-    ylabel(coherence,'Frequency','fontweight','b')
-    ylabel(wt_2,'Frequency','fontweight','b');
-    title(avg_wt_1,'Signal 1','fontweight','b');
-    title(avg_wt_2,'Signal 2','fontweight','b')
-    
-    display('done')
-    
+elseif display_selection == 7 && isfield(handles,'WT')
+    %Plotting all plots
+        clear_pane_axes(handles.wt_pane);    
+        position = [0.06 0.554 0.22 0.40];
+        handles.bispxxx = axes('Parent',handles.wt_pane,'position',position);
+        position = [.331 .55 .22 .40];
+        handles.bispxpp = axes('Parent',handles.wt_pane,'position',position);
+        position = [.487 .07 .22 .40];
+        handles.bisppxx = axes('Parent',handles.wt_pane,'position',position);
+        position = [.758 .07 .22 .40];
+        handles.bispppp = axes('Parent',handles.wt_pane,'position',position);
+%         plot(handles.bisp,rand(10));
+%         plot(handles.bisp_amp,rand(3));
+%         plot(handles.bisp_phase,rand(3));
+     display('selection 4')
 else 
     error('Calculate Wavelet Tranform Before Plotting');
-
 end
-toc
+guidata(hObject,handles);
 
+function calculate_bisp_Callback(hObject, eventdata, handles)
+f1 = str2double(get(handles.freq_1,'String'));
+f2 = str2double(get(handles.freq_2,'String'));
+fs = str2double(get(handles.sampling_freq,'String'));
+fc =  str2double(get(handles.central_freq,'String'));
+xl = csv_to_mvar(get(handles.xlim,'String'));
+xl = xl.*fs;
+xl(2) = min(xl(2),size(handles.sig,2));
+xl(1) = max(xl(1),1);
+xl = xl./fs;
+time_axis = xl(1):1/fs:xl(2);
+
+[handles.biamp, handles.biphase] = biphaseWav(handles.sig(2,:), handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, f1, f2, fs, fc);
+guidata(hObject, handles);
+plot(handles.bisp_amp_axis, time_axis, handles.biamp);
+plot(handles.bisp_phase_axis, time_axis, handles.biphase);
 
 % --------------------------------------------------------------------
 function file_Callback(hObject, eventdata, handles)
@@ -980,9 +754,8 @@ function save_wt_Callback(hObject, eventdata, handles)
 %Saves the wavelet transform
     [FileName,PathName] = uiputfile
     save_location = strcat(PathName,FileName)
-    data = guidata(hObject);
-    WT = data.WT;
-    freqarr = data.freqarr;
+    WT = handles.WT;
+    freqarr = handles.freqarr;
     save(save_location,'freqarr','-v7.3');
     save(save_location,'WT','-v7.3');%Sometimes the compression is faulty
 
@@ -1000,3 +773,23 @@ else
      set(handles.surrogate_percentile,'Enable','on');
 end
     
+function freq_1_Callback(hObject, eventdata, handles)
+
+function freq_1_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function freq_2_Callback(hObject, eventdata, handles)
+
+function freq_2_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function select_freq_Callback(hObject, eventdata, handles)
+[x, y] = ginput(1);
+set(handles.freq_1,'String',x);
+set(handles.freq_2,'String',y);
+
+
