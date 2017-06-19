@@ -175,12 +175,8 @@ function surrogate_percentile_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-%--------------------------------------------------Unused Callbacks--------
-
 function sampling_rate_Callback(hObject, eventdata, handles)
-%Replots after changin sampling rate
-   % display_selected(hObject, eventdata, handles);
+%--------------------------------------------------Unused Callbacks--------
 
 function intervals_Callback(hObject, eventdata, handles)
 %Marking lines on the graphs    
@@ -259,42 +255,6 @@ function preprocess_Callback(hObject, eventdata, handles)
     
     legend(handles.plot_pp,'Original','Pre-Processed','Location','Best');
     xlim(handles.plot_pp,[0,size(sig,2)./fs]);
-    
-function subtract_surrogates_Callback(hObject, eventdata, handles)
-% hObject    handle to subtract_surrogates (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-display_selected = get(handles.display_type,'Value');
-if display_selected == 3 
-    toggle = get(hObject,'Value');
-    if toggle == 1
-        cla(handles.plot_pow,'reset');
-        corrected_coherence = handles.time_avg_wpc - handles.TPC_surr_avg_max;
-        corrected_coherence = subplus(corrected_coherence);
-        plot(handles.plot_pow ,corrected_coherence, handles.freqarr,'LineWidth',2);
-        set(handles.plot_pow,'yscale','log');     
-        ylim(handles.plot_pow,[min(handles.freqarr) max(handles.freqarr)]);
-        xlabel(handles.plot_pow,{'Average Coherence','(Surrogate Subtracted)'},'fontweight','b','fontsize',10);
-        ylabel(handles.plot_pow,'Frequency (Hz)','fontweight','b','fontsize',12);
-        legend(handles.plot_pow,'Surrogate Subtracted','Location','Best');
-    else
-        cla(handles.plot_pow,'reset');
-        hold(handles.plot_pow,'on');
-        plot(handles.plot_pow ,handles.time_avg_wpc, handles.freqarr,'LineWidth',2);
-        if(size(handles.TPC_surr_avg_max)>0)
-            plot(handles.plot_pow ,handles.TPC_surr_avg_max , handles.freqarr,'LineWidth',2);
-        end
-        hold(handles.plot_pow,'off');     
-        set(handles.plot_pow,'yscale','log');     
-        ylim(handles.plot_pow,[min(handles.freqarr) max(handles.freqarr)]);
-        color_positive_breach(handles.freqarr,handles.time_avg_wpc, handles.TPC_surr_avg_max,'color','red','flipped');
-        set(handles.status,'String','Done Plotting');
-        xlabel(handles.plot_pow,'Average Coherence','fontweight','b','fontsize',12);
-        ylabel(handles.plot_pow,'Frequency (Hz)','fontweight','b','fontsize',12);           
-        legend(handles.plot_pow,'Original Signal','Surrogate','Location','Best');
-    end
-    
-end    
 %-------------------------------------------------------------------------    
 
 function wavlet_transform_Callback(hObject, eventdata, handles)
@@ -489,23 +449,21 @@ elseif display_selection == 3 || display_selection == 4 || display_selection == 
         if display_selection == 3
             pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxxx)
             shading(handles.bisp,'interp');
-            %tightfig(handles.bisp);
             set(handles.bisp,'yscale','log');
             set(handles.bisp,'xscale','log');
-            %xlim(handles.bisp,[min(handles.bxxx(:)) , max(handles.bxxx(:))]);
         elseif display_selection == 4
-            surf(handles.bisp, handles.freqarr, handles.freqarr, handles.bppp)
-            shading('interp');
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bppp)
+            shading(handles.bisp,'interp');
             set(handles.bisp,'yscale','log');
             set(handles.bisp,'xscale','log');
         elseif display_selection == 5
-            surf(handles.bisp, handles.freqarr, handles.freqarr, handles.bxpp)
-            shading('interp');
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxpp)
+            shading(handles.bisp,'interp');
             set(handles.bisp,'yscale','log');
             set(handles.bisp,'xscale','log');
         elseif display_selection == 6
-            surf(handles.bisp, handles.freqarr, handles.freqarr, handles.bpxx)
-            shading('interp');
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bpxx)
+            shading(handles.bisp,'interp');
             set(handles.bisp,'yscale','log');
             set(handles.bisp,'xscale','log');
         end
@@ -523,7 +481,7 @@ elseif display_selection == 3 || display_selection == 4 || display_selection == 
 elseif display_selection == 7 && isfield(handles,'WT')
     %Plotting all plots
         clear_pane_axes(handles.wt_pane);    
-        position = [0.06 0.554 0.22 0.40];
+        position = [0.06 0.55 0.22 0.40];
         handles.bispxxx = axes('Parent',handles.wt_pane,'position',position);
         position = [.331 .55 .22 .40];
         handles.bispxpp = axes('Parent',handles.wt_pane,'position',position);
@@ -531,12 +489,25 @@ elseif display_selection == 7 && isfield(handles,'WT')
         handles.bisppxx = axes('Parent',handles.wt_pane,'position',position);
         position = [.758 .07 .22 .40];
         handles.bispppp = axes('Parent',handles.wt_pane,'position',position);
-%         plot(handles.bisp,rand(10));
-%         plot(handles.bisp_amp,rand(3));
-%         plot(handles.bisp_phase,rand(3));
-     display('selection 4')
+        position = [.64 .55 .34 .40];
+        handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position);
+        position = [.06 .07 .34 .40];
+        handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position);
+        pcolor(handles.bispxxx, handles.freqarr, handles.freqarr, handles.bxxx)
+        pcolor(handles.bispppp, handles.freqarr, handles.freqarr, handles.bppp)
+        pcolor(handles.bisppxx, handles.freqarr, handles.freqarr, handles.bpxx)
+        pcolor(handles.bispxpp, handles.freqarr, handles.freqarr, handles.bxpp)
+        
+        child_handles = allchild(handles.wt_pane);
+        for i = 1:size(child_handles,1)
+            if(strcmp(get(child_handles(i),'Type'),'axes'))                
+                shading(child_handles(i),'interp');
+                set(child_handles(i),'yscale','log');
+                set(child_handles(i),'xscale','log');
+            end
+        end               
 else 
-    error('Calculate Wavelet Tranform Before Plotting');
+    error('Calculate Before Plotting');
 end
 guidata(hObject,handles);
 
