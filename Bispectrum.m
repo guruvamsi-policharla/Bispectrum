@@ -447,37 +447,20 @@ elseif display_selection == 3 || display_selection == 4 || display_selection == 
         position = [.56 .09 .42 .42];
         handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position);
         if display_selection == 3
-            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxxx)
-            shading(handles.bisp,'interp');
-            set(handles.bisp,'yscale','log');
-            set(handles.bisp,'xscale','log');
+           pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxxx)                      
         elseif display_selection == 4
             pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bppp)
-            shading(handles.bisp,'interp');
-            set(handles.bisp,'yscale','log');
-            set(handles.bisp,'xscale','log');
         elseif display_selection == 5
             pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxpp)
-            shading(handles.bisp,'interp');
-            set(handles.bisp,'yscale','log');
-            set(handles.bisp,'xscale','log');
         elseif display_selection == 6
             pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bpxx)
-            shading(handles.bisp,'interp');
-            set(handles.bisp,'yscale','log');
-            set(handles.bisp,'xscale','log');
         end
-%         plot(handles.bisp,rand(10));
-%         plot(handles.bisp_amp,rand(3));
-%         plot(handles.bisp_phase,rand(3));
-% Signal 1
-% Signal 2
-% bxxx
-% bppp
-% bxpp
-% bpxx
-% All plots
-
+        shading(handles.bisp,'interp');
+        set(handles.bisp,'yscale','log');
+        set(handles.bisp,'xscale','log'); 
+        xlabel(handles.bisp,'Frequency (Hz)');
+        ylabel(handles.bisp,'Frequency (Hz)');
+        
 elseif display_selection == 7 && isfield(handles,'WT')
     %Plotting all plots
         clear_pane_axes(handles.wt_pane);    
@@ -527,7 +510,9 @@ time_axis = xl(1):1/fs:xl(2);
 guidata(hObject, handles);
 plot(handles.bisp_amp_axis, time_axis, handles.biamp);
 plot(handles.bisp_phase_axis, time_axis, handles.biphase);
-
+ylabel(handles.bisp_amp_axis,'Biamplitdue');
+ylabel(handles.bisp_phase_axis,'Biphase');
+xlabel(handles.bisp_phase_axis,'Time (s)');
 % --------------------------------------------------------------------
 function file_Callback(hObject, eventdata, handles)
 %Loading data
