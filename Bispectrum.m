@@ -34,7 +34,7 @@ function varargout = Bispectrum(varargin)
 
 % Edit the above text to modify the response to help Bispectrum
 
-% Last Modified by GUIDE v2.5 16-Jun-2017 18:00:21
+% Last Modified by GUIDE v2.5 20-Jun-2017 14:52:46
 %*************************************************************************%
 %                BEGIN initialization code - DO NOT EDIT                  %
 %                ----------------------------------------                 %
@@ -176,35 +176,65 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 function sampling_rate_Callback(hObject, eventdata, handles)
+function bisp_ord_Callback(hObject, eventdata, handles)
+function bisp_ord_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function freq_1_Callback(hObject, eventdata, handles)
+
+function freq_1_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function freq_2_Callback(hObject, eventdata, handles)
+
+function freq_2_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 %--------------------------------------------------Unused Callbacks--------
 
 function intervals_Callback(hObject, eventdata, handles)
 %Marking lines on the graphs    
     intervals = csv_to_mvar(get(handles.intervals,'String'));    
-    
+    display_selected = get(handles.display_type,'Value');
     if(size(intervals)>0)
         zval = 1;
         child_handles = allchild(handles.wt_pane);
-        for i = 1:size(child_handles,1)
-            
-            if(strcmp(get(child_handles(i),'Type'),'axes'))
-                set(child_handles(i),'Ytick',intervals);
-                hold(child_handles(i),'on');
-                warning('off');
-                
-                for j = 1:size(intervals,2)
-                    xl = get(child_handles(i),'xlim');
-                    x = [xl(1) xl(2)];        
-                    z = ones(1,size(x,2));
-                    z = z.*zval;
-                    y = intervals(j)*ones(1,size(x,2));
-                    plot3(child_handles(i),x,y,z,'--k');
+        if(display_selected == 1 || display_selected == 2)
+            for i = 1:size(child_handles,1)
+                if(strcmp(get(child_handles(i),'Type'),'axes'))
+                    set(child_handles(i),'Ytick',intervals);
+                    hold(child_handles(i),'on');
+                    warning('off');
+
+                        for j = 1:size(intervals,2)
+                            xl = get(child_handles(i),'xlim');
+                            x = [xl(1) xl(2)];        
+                            z = ones(1,size(x,2));
+                            z = z.*zval;
+                            y = intervals(j)*ones(1,size(x,2));
+                            plot3(child_handles(i),x,y,z,'--k');
+                        end
+                    
+                    warning('on');
+                    hold(child_handles(i),'off');
                 end
-                
-                warning('on');
-                hold(child_handles(i),'off');
             end
-            
+        elseif display_selected >=3 
+            for j = 1:size(intervals,2)
+                yl = get(handles.bisp_amp_axis,'ylim');
+                y = [yl(1) yl(2)];        
+                x = intervals(j)*ones(1,size(y,2));
+                plot(handles.bisp_amp_axis,x,y,'--k')
+                yl = get(handles.bisp_phase_axis,'ylim');
+                y = [yl(1) yl(2)];        
+                x = intervals(j)*ones(1,size(y,2));
+                plot(handles.bisp_phase_axis,x,y,'--k')
+            end    
         end
     end
     
@@ -266,7 +296,7 @@ function wavlet_transform_Callback(hObject, eventdata, handles)
     fmax = str2double(get(handles.max_freq,'String'));
     fmin = str2double(get(handles.min_freq,'String'));
     fc =  str2double(get(handles.central_freq,'String'));
-    
+    ord = str2double(get(handles.bisp_ord,'String'));
     items = get(handles.wavelet_type,'String');
     index_selected = get(handles.wavelet_type,'Value');
     wavelet_type_selected = items{index_selected};
@@ -283,6 +313,11 @@ function wavlet_transform_Callback(hObject, eventdata, handles)
     
     n = size(sig,1) ;
     handles.WT = cell(n, 1);
+    
+    if isnan(ord)
+      errordlg('Order must be specified','Parameter Error');
+      return
+    end
     
 %Taking only selected part of the signal
     xl = get(handles.xlim,'String');
@@ -346,13 +381,6 @@ function wavlet_transform_Callback(hObject, eventdata, handles)
         end
     end
     
-    
-    
-    %Bispectrum part 
-    display('Calculating TPC');
-    handles.TPC = tlphcoh(handles.WT{1,1},handles.WT{2,1},handles.freqarr,fs);
-    handles.time_avg_wpc = nanmean(handles.TPC.');   
-    display('Finished calculating TPC');
     %---------------
     
     handles.amp_WT = cell(n,1);
@@ -368,13 +396,15 @@ function wavlet_transform_Callback(hObject, eventdata, handles)
         handles.pow_arr{p,1} = nanmean(handles.pow_WT{p,1}.');%Calculating Average Power
         handles.amp_arr{p,1} = nanmean(handles.amp_WT{p,1}.');%Calculating Average Amplitude  
     end
-
+    
     %Calculating the Bispectrum
-    [handles.bxxx, handles.bppp, handles.bpxx, handles.bxpp] = bispectrum(handles.sig(1,:), handles.sig(2,:), handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, .01, 5, fs, fc);
-    %[bxxx bppp bpxx bxpp] = bispectrum(x, p, wt_1, wt_2, freqarr, .01, 5, 100, 1);
-    guidata(hObject,handles);
+    [handles.bxxx, handles.bppp, handles.bpxx, handles.bxpp] = bispectrum(handles.sig(1,:), handles.sig(2,:),...
+        handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, .01, ord, fs, fc);
+    
+    guidata(hObject,handles);    
     display_type_Callback(hObject, eventdata, handles);
     guidata(hObject,handles);
+    
     set(handles.display_type,'Enable','on');
     set(handles.intervals,'Enable','on');
   
@@ -437,6 +467,7 @@ if (display_selection == 1 || display_selection == 2) && isfield(handles,'WT')
             xlabel(handles.plot_pow,'Average Amplitude','fontweight','b','fontsize',12);
         end
         ylabel(handles.plot_pow,'Frequency (Hz)','fontweight','b','fontsize',12);
+        
 elseif display_selection == 3 || display_selection == 4 || display_selection == 5 || display_selection == 6
      %Plotting bispectrum   
         clear_pane_axes(handles.wt_pane);    
@@ -474,8 +505,10 @@ elseif display_selection == 7 && isfield(handles,'WT')
         handles.bispppp = axes('Parent',handles.wt_pane,'position',position);
         position = [.64 .55 .34 .40];
         handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position);
+        
         position = [.06 .07 .34 .40];
         handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position);
+        
         pcolor(handles.bispxxx, handles.freqarr, handles.freqarr, handles.bxxx)
         pcolor(handles.bispppp, handles.freqarr, handles.freqarr, handles.bppp)
         pcolor(handles.bisppxx, handles.freqarr, handles.freqarr, handles.bpxx)
@@ -483,7 +516,8 @@ elseif display_selection == 7 && isfield(handles,'WT')
         
         child_handles = allchild(handles.wt_pane);
         for i = 1:size(child_handles,1)
-            if(strcmp(get(child_handles(i),'Type'),'axes'))                
+            if(strcmp(get(child_handles(i),'Type'),'axes'))     
+                xlabel(child_handles(i),'Frequency (Hz)');
                 shading(child_handles(i),'interp');
                 set(child_handles(i),'yscale','log');
                 set(child_handles(i),'xscale','log');
@@ -495,24 +529,71 @@ end
 guidata(hObject,handles);
 
 function calculate_bisp_Callback(hObject, eventdata, handles)
-f1 = str2double(get(handles.freq_1,'String'));
-f2 = str2double(get(handles.freq_2,'String'));
-fs = str2double(get(handles.sampling_freq,'String'));
-fc =  str2double(get(handles.central_freq,'String'));
-xl = csv_to_mvar(get(handles.xlim,'String'));
-xl = xl.*fs;
-xl(2) = min(xl(2),size(handles.sig,2));
-xl(1) = max(xl(1),1);
-xl = xl./fs;
-time_axis = xl(1):1/fs:xl(2);
+%Plotting the Biphase and Biamp
+display_selection = get(handles.display_type,'Value');
+    if(display_selection>=3 && display_selection<=6) 
+        hold(handles.bisp_amp_axis,'on');
+        hold(handles.bisp_phase_axis,'on');
+        f1 = str2double(get(handles.freq_1,'String'));
+        f2 = str2double(get(handles.freq_2,'String'));
+        fs = str2double(get(handles.sampling_freq,'String'));
+        fc =  str2double(get(handles.central_freq,'String'));
+        xl = csv_to_mvar(get(handles.xlim,'String'));
+        xl = xl.*fs;
+        xl(2) = min(xl(2),size(handles.sig,2));
+        xl(1) = max(xl(1),1);
+        xl = xl./fs;
+        time_axis = xl(1):1/fs:xl(2);
+        %Verify Calculation from Ola
+        if display_selection == 3
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig(1,:), handles.WT{1,1}, handles.WT{1,1}, handles.freqarr, f1, f2, fs, fc);
+        elseif display_selection == 4
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig(2,:), handles.WT{2,1}, handles.WT{2,1}, handles.freqarr, f1, f2, fs, fc);
+        elseif display_selection == 5
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig(2,:), handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, f1, f2, fs, fc);
+        elseif display_selection == 6
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig(1,:), handles.WT{2,1}, handles.WT{1,1}, handles.freqarr, f1, f2, fs, fc);
+        end
+        plot(handles.bisp_amp_axis, time_axis, handles.biamp);
+        plot(handles.bisp_phase_axis, time_axis, handles.biphase);
+        
+        ylabel(handles.bisp_amp_axis,'Biamplitdue');
+        ylabel(handles.bisp_phase_axis,'Biphase');
+        xlabel(handles.bisp_phase_axis,'Time (s)');
+        guidata(hObject, handles);
+    end
+%Marking the point 
 
-[handles.biamp, handles.biphase] = biphaseWav(handles.sig(2,:), handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, f1, f2, fs, fc);
-guidata(hObject, handles);
-plot(handles.bisp_amp_axis, time_axis, handles.biamp);
-plot(handles.bisp_phase_axis, time_axis, handles.biphase);
-ylabel(handles.bisp_amp_axis,'Biamplitdue');
-ylabel(handles.bisp_phase_axis,'Biphase');
-xlabel(handles.bisp_phase_axis,'Time (s)');
+child_handles = allchild(handles.bisp);
+for i = 1:size(child_handles,1)    
+    if(strcmp(get(child_handles(i),'Type'),'line'))
+        xdat = get(child_handles(i),'XData');
+        mark = get(child_handles(i),'Marker');
+        if(length(xdat) == 1 && strcmp(mark,'*'))
+            set(child_handles(i),'Marker','o');
+            set(child_handles(i),'MarkerEdgeColor','y');
+        end
+    end
+end
+
+function select_freq_Callback(hObject, eventdata, handles)
+[x, y] = ginput(1);
+child_handles = allchild(handles.bisp);
+for i = 1:size(child_handles,1)    
+    if(strcmp(get(child_handles(i),'Type'),'line'))
+        xdat = get(child_handles(i),'XData');
+        mark = get(child_handles(i),'Marker');
+        if(length(xdat) == 1 && strcmp(mark,'*'))
+            delete(child_handles(i))
+        end
+    end
+end
+
+hold(handles.bisp,'on');
+plot(handles.bisp, x, y, 'r*')
+set(handles.freq_1,'String',x);
+set(handles.freq_2,'String',y);
+
 % --------------------------------------------------------------------
 function file_Callback(hObject, eventdata, handles)
 %Loading data
@@ -728,24 +809,11 @@ if surrogate_analysis == 1
 else
      set(handles.surrogate_percentile,'Enable','on');
 end
-    
-function freq_1_Callback(hObject, eventdata, handles)
 
-function freq_1_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
+function bisp_clear_Callback(hObject, eventdata, handles)
+cla(handles.bisp_amp_axis,'reset');
+cla(handles.bisp_phase_axis,'reset');
+clear_axes_points(handles.bisp);
 
-function freq_2_Callback(hObject, eventdata, handles)
-
-function freq_2_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function select_freq_Callback(hObject, eventdata, handles)
-[x, y] = ginput(1);
-set(handles.freq_1,'String',x);
-set(handles.freq_2,'String',y);
 
 
