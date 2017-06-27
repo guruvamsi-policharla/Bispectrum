@@ -182,15 +182,10 @@ function bisp_ord_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-function freq_1_Callback(hObject, eventdata, handles)
-
 function freq_1_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-function freq_2_Callback(hObject, eventdata, handles)
-
 function freq_2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -283,7 +278,7 @@ function preprocess_Callback(hObject, eventdata, handles)
     plot(handles.plot_pp,time_axis,new_signal,'-r');
     
     
-    legend(handles.plot_pp,'Original','Pre-Processed','Location','Best');
+    %legend(handles.plot_pp,'Original','Pre-Processed','Location','Best');
     xlim(handles.plot_pp,[0,size(sig,2)./fs]);
 %-------------------------------------------------------------------------    
 
@@ -327,8 +322,7 @@ function wavlet_transform_Callback(hObject, eventdata, handles)
     xl(1) = max(xl(1),1);
     sig = sig(:,xl(1):xl(2));
     xl = xl./fs;
-    
-    
+      
     set(handles.status,'String','Calculating Wavelet Transform...');
     %Calculating wavelet transform and deciding parameter form
     if(isnan(fmax)&& isnan(fmin))
@@ -410,13 +404,15 @@ function wavlet_transform_Callback(hObject, eventdata, handles)
   
 function display_type_Callback(hObject, eventdata, handles)
 tic
+set(handles.freq_1,'String','');
+set(handles.freq_2,'String','');
 display_selection = get(hObject,'Value');
 
 set(handles.status,'String','Plotting Data');
 
 sig = handles.sig;
 fs = str2double(get(handles.sampling_freq,'String'));
-n = str2double(get(handles.sampling_rate,'String'));
+n = size(sig,2)/1000;
 xl = csv_to_mvar(get(handles.xlim,'String'));
 xl = xl.*fs;
 xl(2) = min(xl(2),size(sig,2));
@@ -471,14 +467,14 @@ if (display_selection == 1 || display_selection == 2) && isfield(handles,'WT')
 elseif display_selection == 3 || display_selection == 4 || display_selection == 5 || display_selection == 6
      %Plotting bispectrum   
         clear_pane_axes(handles.wt_pane);    
-        position = [0.06 0.17 0.432 0.8];
-        handles.bisp = axes('Parent',handles.wt_pane,'position',position);
+        position = [0.06 0.12 0.432 0.8];
+        handles.bisp = axes('Parent',handles.wt_pane,'position',position,'fontsize',0.03);            
         position = [.56 .55 .42 .42];
-        handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position);
+        handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position,'fontsize',0.05);
         position = [.56 .09 .42 .42];
-        handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position);
+        handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position,'fontsize',0.05);
         if display_selection == 3
-           pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxxx)                      
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxxx) 
         elseif display_selection == 4
             pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bppp)
         elseif display_selection == 5
@@ -486,43 +482,47 @@ elseif display_selection == 3 || display_selection == 4 || display_selection == 
         elseif display_selection == 6
             pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bpxx)
         end
-        shading(handles.bisp,'interp');
-        set(handles.bisp,'yscale','log');
-        set(handles.bisp,'xscale','log'); 
+        set(handles.bisp,'fontsize',0.03, 'yscale','log','xscale','log');
+        idx_first = find(sum(~isnan(handles.bxxx),1) > 0, 1 ,'first');
+        idx_last = find(sum(~isnan(handles.bxxx),1) > 0, 1 , 'last');      
+        xlim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
+        ylim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);        
+        title(handles.bisp,'Bispectrum','fontsize',14,'fontweight','normal');
         xlabel(handles.bisp,'Frequency (Hz)');
         ylabel(handles.bisp,'Frequency (Hz)');
+        shading(handles.bisp,'interp');
         
 elseif display_selection == 7 && isfield(handles,'WT')
     %Plotting all plots
-        clear_pane_axes(handles.wt_pane);    
-        position = [0.06 0.55 0.22 0.40];
-        handles.bispxxx = axes('Parent',handles.wt_pane,'position',position);
-        position = [.331 .55 .22 .40];
-        handles.bispxpp = axes('Parent',handles.wt_pane,'position',position);
-        position = [.487 .07 .22 .40];
-        handles.bisppxx = axes('Parent',handles.wt_pane,'position',position);
-        position = [.758 .07 .22 .40];
-        handles.bispppp = axes('Parent',handles.wt_pane,'position',position);
-        position = [.64 .55 .34 .40];
-        handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position);
-        
-        position = [.06 .07 .34 .40];
-        handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position);
-        
-        pcolor(handles.bispxxx, handles.freqarr, handles.freqarr, handles.bxxx)
-        pcolor(handles.bispppp, handles.freqarr, handles.freqarr, handles.bppp)
-        pcolor(handles.bisppxx, handles.freqarr, handles.freqarr, handles.bpxx)
-        pcolor(handles.bispxpp, handles.freqarr, handles.freqarr, handles.bxpp)
-        
-        child_handles = allchild(handles.wt_pane);
-        for i = 1:size(child_handles,1)
-            if(strcmp(get(child_handles(i),'Type'),'axes'))     
-                xlabel(child_handles(i),'Frequency (Hz)');
-                shading(child_handles(i),'interp');
-                set(child_handles(i),'yscale','log');
-                set(child_handles(i),'xscale','log');
-            end
-        end               
+%         clear_pane_axes(handles.wt_pane);    
+%         position = [0.06 0.55 0.22 0.40];
+%         handles.bispxxx = axes('Parent',handles.wt_pane,'position',position);
+%         position = [.331 .55 .22 .40];
+%         handles.bispxpp = axes('Parent',handles.wt_pane,'position',position);
+%         position = [.487 .07 .22 .40];
+%         handles.bisppxx = axes('Parent',handles.wt_pane,'position',position);
+%         position = [.758 .07 .22 .40];
+%         handles.bispppp = axes('Parent',handles.wt_pane,'position',position);
+%         position = [.64 .55 .34 .40];
+%         handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position);
+%         
+%         position = [.06 .07 .34 .40];
+%         handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position);
+%         
+%         pcolor(handles.bispxxx, handles.freqarr, handles.freqarr, handles.bxxx)
+%         pcolor(handles.bispppp, handles.freqarr, handles.freqarr, handles.bppp)
+%         pcolor(handles.bisppxx, handles.freqarr, handles.freqarr, handles.bpxx)
+%         pcolor(handles.bispxpp, handles.freqarr, handles.freqarr, handles.bxpp)
+%         
+%         child_handles = allchild(handles.wt_pane);
+%         for i = 1:size(child_handles,1)
+%             if(strcmp(get(child_handles(i),'Type'),'axes'))     
+%                 xlabel(child_handles(i),'Frequency (Hz)');
+%                 shading(child_handles(i),'interp');
+%                 set(child_handles(i),'yscale','log');
+%                 set(child_handles(i),'xscale','log');
+%             end
+%         end               
 else 
     error('Calculate Before Plotting');
 end
@@ -555,11 +555,10 @@ display_selection = get(handles.display_type,'Value');
             [handles.biamp, handles.biphase] = biphaseWav(handles.sig(1,:), handles.WT{2,1}, handles.WT{1,1}, handles.freqarr, f1, f2, fs, fc);
         end
         plot(handles.bisp_amp_axis, time_axis, handles.biamp);
-        plot(handles.bisp_phase_axis, time_axis, handles.biphase);
-        
+        plot(handles.bisp_phase_axis, time_axis, handles.biphase);        
         ylabel(handles.bisp_amp_axis,'Biamplitdue');
         ylabel(handles.bisp_phase_axis,'Biphase');
-        xlabel(handles.bisp_phase_axis,'Time (s)');
+        xlabel(handles.bisp_phase_axis,'Time (s)');        
         guidata(hObject, handles);
     end
 %Marking the point 
@@ -575,6 +574,38 @@ for i = 1:size(child_handles,1)
         end
     end
 end
+
+function freq_2_Callback(hObject, eventdata, handles)
+x = str2double(get(handles.freq_1,'String'));
+y = str2double(get(handles.freq_2,'String'));
+child_handles = allchild(handles.bisp);
+for i = 1:size(child_handles,1)    
+    if(strcmp(get(child_handles(i),'Type'),'line'))
+        xdat = get(child_handles(i),'XData');
+        mark = get(child_handles(i),'Marker');
+        if(length(xdat) == 1 && strcmp(mark,'*'))
+            delete(child_handles(i))
+        end
+    end
+end
+hold(handles.bisp,'on');
+plot(handles.bisp, x, y, 'r*')
+
+function freq_1_Callback(hObject, eventdata, handles)
+x = str2double(get(handles.freq_1,'String'));
+y = str2double(get(handles.freq_2,'String'));
+child_handles = allchild(handles.bisp);
+for i = 1:size(child_handles,1)    
+    if(strcmp(get(child_handles(i),'Type'),'line'))
+        xdat = get(child_handles(i),'XData');
+        mark = get(child_handles(i),'Marker');
+        if(length(xdat) == 1 && strcmp(mark,'*'))
+            delete(child_handles(i))
+        end
+    end
+end
+hold(handles.bisp,'on');
+plot(handles.bisp, x, y, 'r*')
 
 function select_freq_Callback(hObject, eventdata, handles)
 [x, y] = ginput(1);
@@ -614,77 +645,59 @@ function csv_read_Callback(hObject, eventdata, handles)
     guidata(hObject,data);    
     
     
-    time_series_1 = axes('Parent',handles.time_series_pane);
-    plot(time,sig(1,:));%Plotting the time_series part afte calculation of appropriate limits
-    xlim(time_series_1,[0,size(sig,2)./fs]);
-    set(time_series_1,'XTickLabel',[]);
-    set(time_series_1,'position',[0.09 0.65 .83 0.3]);
-    ylabel(time_series_1,'Signal 1');
+    time = 1:size(handles.sig,2);
+    time = time./fs;          
+    handles.time_axis = time;
+    plot(handles.time_series_1, time, handles.sig(1,:));%Plotting the time_series part afte calculation of appropriate limits
+    xlim(handles.time_series_1,[0,size(handles.sig,2)./fs]);
+    ylabel(handles.time_series_1,'Signal 1');
     
-    time_series_2 = subplot(2,8,[12 15],'Parent',handles.time_series_pane);
-    plot(time,sig(2,:));%Plotting the time_series part afte calculation of appropriate limits
-    xlim(time_series_2,[0,size(sig,2)./fs]);
-    set(time_series_1,'XTickLabel',[]);
-    set(time_series_2,'position',[0.09 0.25 .83 0.3]);
-    xlabel(time_series_2,'Time (s)','fontweight','b','fontsize',10);
-    ylabel(time_series_2,'Signal 2');
     
-    linkaxes([time_series_1 time_series_2],'x');
-    data.time_series_1 = time_series_1;
-    data.time_series_2 = time_series_2;
-    guidata(hObject,data);
-    
-    handles.time_series_1 = time_series_1;
-    handles.time_series_2 = time_series_2;
+    plot(handles.time_series_2, time, handles.sig(2,:));%Plotting the time_series part afte calculation of appropriate limits
+    xlim(handles.time_series_2,[0,size( handles.sig,2)./fs]);
+    xlabel(handles.time_series_2,'Time (s)');
+    ylabel(handles.time_series_2,'Signal 2');  
+    linkaxes([handles.time_series_1 handles.time_series_2],'x');
+        
     refresh_limits_Callback(hObject, eventdata, handles);%updates the values in the box
-    cla(handles.plot_pp,'reset');
-    preprocess_Callback(hObject, eventdata, handles);%plots the detrended curve
     
+    guidata(hObject,handles);
+    preprocess_Callback(hObject, eventdata, handles);%plots the detrended curve
+    guidata(hObject,handles);
+    get(handles.time_series_2,'fontsize')
+    get(handles.time_series_2,'fontunits')
     set(handles.status,'String','Select Data And Continue With Wavelet Transform'); 
 
 % --------------------------------------------------------------------
 function mat_read_Callback(hObject, eventdata, handles)
 %Read mat file    
     set(handles.status,'String','Importing Signal...');
-
-    sig = read_from_mat(); 
-    sig = struct2cell(sig);
-    sig = cell2mat(sig);
+    handles.sig = read_from_mat(); 
+    handles.sig = struct2cell(handles.sig);
+    handles.sig = cell2mat(handles.sig);
     fs = str2double(get(handles.sampling_freq,'String')); 
-
-    data = guidata(hObject);
-    data.sig = sig;   
-    time = 1:size(sig,2);
-    time = time./fs;
-    data.time_axis = time;
+ 
+    time = 1:size(handles.sig,2);
+    time = time./fs;          
+    handles.time_axis = time;
+    plot(handles.time_series_1, time, handles.sig(1,:));%Plotting the time_series part afte calculation of appropriate limits
+    xlim(handles.time_series_1,[0,size(handles.sig,2)./fs]);
+    ylabel(handles.time_series_1,'Signal 1');
+    
+    
+    plot(handles.time_series_2, time, handles.sig(2,:));%Plotting the time_series part afte calculation of appropriate limits
+    xlim(handles.time_series_2,[0,size( handles.sig,2)./fs]);
+    xlabel(handles.time_series_2,'Time (s)');
+    ylabel(handles.time_series_2,'Signal 2');  
+    linkaxes([handles.time_series_1 handles.time_series_2],'x');
         
-    
-   time_series_1 = axes('Parent',handles.time_series_pane);
-    plot(time,sig(1,:));%Plotting the time_series part afte calculation of appropriate limits
-    xlim(time_series_1,[0,size(sig,2)./fs]);
-    set(time_series_1,'XTickLabel',[]);
-    set(time_series_1,'position',[0.09 0.65 .83 0.3]);
-    ylabel(time_series_1,'Signal 1');
-    
-    time_series_2 = subplot(2,8,[12 15],'Parent',handles.time_series_pane);
-    plot(time,sig(2,:));%Plotting the time_series part afte calculation of appropriate limits
-    xlim(time_series_2,[0,size(sig,2)./fs]);
-    set(time_series_1,'XTickLabel',[]);
-    set(time_series_2,'position',[0.09 0.25 .83 0.3]);
-    xlabel(time_series_2,'Time (s)','fontweight','b','fontsize',10);
-    ylabel(time_series_2,'Signal 2');
-    
-    linkaxes([time_series_1 time_series_2],'x');
-    data.time_series_1 = time_series_1;
-    data.time_series_2 = time_series_2;
-    guidata(hObject,data);
-    
-    handles.time_series_1 = time_series_1;
-    handles.time_series_2 = time_series_2;
     refresh_limits_Callback(hObject, eventdata, handles);%updates the values in the box
-    cla(handles.plot_pp,'reset');
-    preprocess_Callback(hObject, eventdata, handles);%plots the detrended curve
     
+    guidata(hObject,handles);
+    preprocess_Callback(hObject, eventdata, handles);%plots the detrended curve
+    guidata(hObject,handles);
+    get(handles.time_series_2,'fontsize')
+    get(handles.time_series_2,'fontunits')
     set(handles.status,'String','Select Data And Continue With Wavelet Transform'); 
     
 %---------------------------Limits-----------------------------
@@ -813,7 +826,7 @@ end
 function bisp_clear_Callback(hObject, eventdata, handles)
 cla(handles.bisp_amp_axis,'reset');
 cla(handles.bisp_phase_axis,'reset');
+set(handles.freq_1,'String','');
+set(handles.freq_2,'String','');
 clear_axes_points(handles.bisp);
-
-
 
