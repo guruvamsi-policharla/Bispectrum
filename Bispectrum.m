@@ -412,7 +412,7 @@ set(handles.status,'String','Plotting Data');
 
 sig = handles.sig;
 fs = str2double(get(handles.sampling_freq,'String'));
-n = size(sig,2)/1000;
+n = floor(size(sig,2)/1000);
 xl = csv_to_mvar(get(handles.xlim,'String'));
 xl = xl.*fs;
 xl(2) = min(xl(2),size(sig,2));
@@ -482,47 +482,73 @@ elseif display_selection == 3 || display_selection == 4 || display_selection == 
         elseif display_selection == 6
             pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bpxx)
         end
-        set(handles.bisp,'fontsize',0.03, 'yscale','log','xscale','log');
+        set(handles.bisp, 'yscale','log','xscale','log');
         idx_first = find(sum(~isnan(handles.bxxx),1) > 0, 1 ,'first');
         idx_last = find(sum(~isnan(handles.bxxx),1) > 0, 1 , 'last');      
         xlim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
-        ylim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);        
-        title(handles.bisp,'Bispectrum','fontsize',14,'fontweight','normal');
+        ylim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);               
         xlabel(handles.bisp,'Frequency (Hz)');
         ylabel(handles.bisp,'Frequency (Hz)');
         shading(handles.bisp,'interp');
+        title(handles.bisp,'Bispectrum','fontsize',14,'fontweight','normal');
         
 elseif display_selection == 7 && isfield(handles,'WT')
     %Plotting all plots
-%         clear_pane_axes(handles.wt_pane);    
-%         position = [0.06 0.55 0.22 0.40];
-%         handles.bispxxx = axes('Parent',handles.wt_pane,'position',position);
-%         position = [.331 .55 .22 .40];
-%         handles.bispxpp = axes('Parent',handles.wt_pane,'position',position);
-%         position = [.487 .07 .22 .40];
-%         handles.bisppxx = axes('Parent',handles.wt_pane,'position',position);
-%         position = [.758 .07 .22 .40];
-%         handles.bispppp = axes('Parent',handles.wt_pane,'position',position);
-%         position = [.64 .55 .34 .40];
-%         handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position);
-%         
-%         position = [.06 .07 .34 .40];
-%         handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position);
-%         
-%         pcolor(handles.bispxxx, handles.freqarr, handles.freqarr, handles.bxxx)
-%         pcolor(handles.bispppp, handles.freqarr, handles.freqarr, handles.bppp)
-%         pcolor(handles.bisppxx, handles.freqarr, handles.freqarr, handles.bpxx)
-%         pcolor(handles.bispxpp, handles.freqarr, handles.freqarr, handles.bxpp)
-%         
-%         child_handles = allchild(handles.wt_pane);
-%         for i = 1:size(child_handles,1)
-%             if(strcmp(get(child_handles(i),'Type'),'axes'))     
-%                 xlabel(child_handles(i),'Frequency (Hz)');
-%                 shading(child_handles(i),'interp');
-%                 set(child_handles(i),'yscale','log');
-%                 set(child_handles(i),'xscale','log');
-%             end
-%         end               
+        clear_pane_axes(handles.wt_pane);    
+        position = [.08 .58 .22 .40];
+        handles.bispxxx = axes('Parent',handles.wt_pane,'position',position);
+        position = [.35 .58 .22 .40];
+        handles.bispxpp = axes('Parent',handles.wt_pane,'position',position);
+        position = [.08 .12 .22 .40];
+        handles.bisppxx = axes('Parent',handles.wt_pane,'position',position);
+        position = [.35 .12 .22 .40];
+        handles.bispppp = axes('Parent',handles.wt_pane,'position',position);
+        
+        position = [.64 .58 .34 .40];
+        handles.wt_1 = axes('Parent',handles.wt_pane,'position',position);        
+        position = [.64 .12 .34 .40];
+        handles.wt_2 = axes('Parent',handles.wt_pane,'position',position);
+        
+        pcolor(handles.bispxxx, handles.freqarr, handles.freqarr, handles.bxxx)
+        pcolor(handles.bispppp, handles.freqarr, handles.freqarr, handles.bppp)
+        pcolor(handles.bisppxx, handles.freqarr, handles.freqarr, handles.bpxx)
+        pcolor(handles.bispxpp, handles.freqarr, handles.freqarr, handles.bxpp)
+        
+        if(handles.plot_type == 1)           
+            pcolor(handles.wt_1, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{1,1}(1:end,1:n:end));
+            pcolor(handles.wt_2, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{2,1}(1:end,1:n:end));
+        else            
+            pcolor(handles.wt_1, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{1,1}(1:end,1:n:end)); 
+            pcolor(handles.wt_2, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{2,1}(1:end,1:n:end)); 
+        end 
+        
+        shading(handles.wt_1,'interp');     
+        shading(handles.wt_2,'interp');  
+        ylabel(handles.wt_1,'Frequency (Hz)');
+        xlabel(handles.wt_2,'Time (s)');
+        ylabel(handles.wt_2,'Frequency (Hz)');
+        
+        idx_first = find(sum(~isnan(handles.bxxx),1) > 0, 1 ,'first');
+        idx_last = find(sum(~isnan(handles.bxxx),1) > 0, 1 , 'last');      
+        
+        child_handles = allchild(handles.wt_pane);
+        for i = 4:size(child_handles,1)
+            if(strcmp(get(child_handles(i),'Type'),'axes'))    
+                shading(child_handles(i),'interp');
+                set(child_handles(i),'yscale','log');
+                set(child_handles(i),'xscale','log');
+                xlim(child_handles(i),[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
+                ylim(child_handles(i),[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
+            end
+        end   
+        set(handles.wt_1,'yscale','log','ylim',[handles.freqarr(idx_first) handles.freqarr(idx_last)], 'xlim',[time_axis(1) time_axis(end)],...
+        'zdir','reverse');
+        set(handles.wt_2,'yscale','log','ylim',[handles.freqarr(idx_first) handles.freqarr(idx_last)], 'xlim',[time_axis(1) time_axis(end)],...
+        'zdir','reverse');
+        ylabel(handles.bispxxx,'Frequency(Hz)');
+        ylabel(handles.bisppxx,'Frequency(Hz)');
+        xlabel(handles.bisppxx,'Frequency(Hz)');
+        xlabel(handles.bispppp,'Frequency(Hz)');
 else 
     error('Calculate Before Plotting');
 end
