@@ -403,7 +403,6 @@ function wavlet_transform_Callback(hObject, eventdata, handles)
     set(handles.intervals,'Enable','on');
   
 function display_type_Callback(hObject, eventdata, handles)
-tic
 set(handles.freq_1,'String','');
 set(handles.freq_2,'String','');
 display_selection = get(hObject,'Value');
@@ -468,11 +467,11 @@ elseif display_selection == 3 || display_selection == 4 || display_selection == 
      %Plotting bispectrum   
         clear_pane_axes(handles.wt_pane);    
         position = [0.06 0.12 0.432 0.8];
-        handles.bisp = axes('Parent',handles.wt_pane,'position',position,'fontsize',0.03);            
+        handles.bisp = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');            
         position = [.56 .55 .42 .42];
-        handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position,'fontsize',0.05);
+        handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');
         position = [.56 .09 .42 .42];
-        handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position,'fontsize',0.05);
+        handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');
         if display_selection == 3
             pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxxx) 
         elseif display_selection == 4
