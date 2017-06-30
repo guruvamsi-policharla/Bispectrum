@@ -61,8 +61,18 @@ end
 
 
 function Bispectrum_OpeningFcn(hObject, eventdata, handles, varargin)
+movegui('center') 
+axes(handles.logo)
+matlabImage = imread('physicslogo.png');
+image(matlabImage)
+axis off
+axis image
+h = findall(0,'Type','uicontrol');
+set(h,'FontUnits','normalized');
+
 handles.output = hObject;
 guidata(hObject, handles);
+
 function varargout = Bispectrum_OutputFcn(hObject, eventdata, handles) 
 varargout{1} = handles.output;
 function plot_type_CreateFcn(hObject, eventdata, handles)
@@ -402,13 +412,20 @@ set(handles.status,'String','Plotting Data');
 
 sig = handles.sig;
 fs = str2double(get(handles.sampling_freq,'String'));
-n = floor(size(sig,2)/1000);
+
 xl = csv_to_mvar(get(handles.xlim,'String'));
 xl = xl.*fs;
 xl(2) = min(xl(2),size(sig,2));
 xl(1) = max(xl(1),1);
 xl = xl./fs;
 time_axis = xl(1):1/fs:xl(2);
+
+if length(time_axis)>=2000
+    screensize = max(get(groot,'Screensize'));
+    n = floor(size(sig,2)/screensize);%TODO improve reliability with screens
+else 
+    n = 1;
+end
 
 if (display_selection == 1 || display_selection == 2) && isfield(handles,'WT')
     
@@ -551,6 +568,10 @@ guidata(hObject,handles);
 function calculate_bisp_Callback(hObject, eventdata, handles)
 %Plotting the Biphase and Biamp
 display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
+display_selection = get(handles.display_type,'Value');
     if(display_selection>=3 && display_selection<=6) 
         hold(handles.bisp_amp_axis,'on');
         hold(handles.bisp_phase_axis,'on');
@@ -611,18 +632,20 @@ display_selection = get(handles.display_type,'Value');
     end
 
 function bisp_clear_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
 cla(handles.bisp_amp_axis,'reset');
 cla(handles.bisp_phase_axis,'reset');
 clear_axes_points(handles.bisp);
 
 % --- Executes on key press with focus on frequency_select and none of its controls.
 function frequency_select_KeyPressFcn(hObject, eventdata, handles)
-% hObject    handle to frequency_select (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
-%	Key: name of the key that was pressed, in lower case
-%	Character: character interpretation of the key(s) that was pressed
-%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
-% handles    structure with handles and user data (see GUIDATA)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
 switch eventdata.Key
     
     case 'delete'
@@ -684,6 +707,10 @@ switch eventdata.Key
 end
 
 function frequency_select_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
 frequency_list = get(handles.frequency_select,'String');
 frequency_selected = get(handles.frequency_select,'Value');
 child_handles = allchild(handles.bisp);
@@ -702,6 +729,10 @@ for i = 1:size(frequency_selected,2)
 end
 
 function freq_2_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
 x = str2double(get(handles.freq_1,'String'));
 y = str2double(get(handles.freq_2,'String'));
 child_handles = allchild(handles.bisp);
@@ -718,6 +749,10 @@ hold(handles.bisp,'on');
 plot(handles.bisp, x, y, 'r*')
 
 function freq_1_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
 x = str2double(get(handles.freq_1,'String'));
 y = str2double(get(handles.freq_2,'String'));
 child_handles = allchild(handles.bisp);
@@ -734,6 +769,10 @@ hold(handles.bisp,'on');
 plot(handles.bisp, x, y, 'r*')
 
 function mark_freq_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
 [x, y] = ginput(1);
 child_handles = allchild(handles.bisp);
 for i = 1:size(child_handles,1)    
@@ -790,8 +829,6 @@ function csv_read_Callback(hObject, eventdata, handles)
     guidata(hObject,handles);
     preprocess_Callback(hObject, eventdata, handles);%plots the detrended curve
     guidata(hObject,handles);
-    get(handles.time_series_2,'fontsize')
-    get(handles.time_series_2,'fontunits')
     set(handles.status,'String','Select Data And Continue With Wavelet Transform'); 
 
 % --------------------------------------------------------------------
@@ -822,8 +859,6 @@ function mat_read_Callback(hObject, eventdata, handles)
     guidata(hObject,handles);
     preprocess_Callback(hObject, eventdata, handles);%plots the detrended curve
     guidata(hObject,handles);
-    get(handles.time_series_2,'fontsize')
-    get(handles.time_series_2,'fontunits')
     set(handles.status,'String','Select Data And Continue With Wavelet Transform'); 
     
 %---------------------------Limits-----------------------------

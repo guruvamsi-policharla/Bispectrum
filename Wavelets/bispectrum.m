@@ -5,7 +5,7 @@ bxxx = NaN*zeros(length(freqarr));
 bppp = NaN*zeros(length(freqarr));
 bpxx = NaN*zeros(length(freqarr));
 bxpp = NaN*zeros(length(freqarr));
-h = waitbar(0,'Please wait...');
+h = waitbar(0,'Starting..','Name','Calculating Bispectrum');
 tic
 count = 0;
 for i = 1:length(freqarr)
@@ -31,7 +31,7 @@ for i = 1:length(freqarr)
             end
         end       
     end
-    waitbar(i / length(freqarr));
+    waitbar(i / length(freqarr),h,sprintf('Calculating Bispectrum %d/%d',i,length(freqarr)));
 end
 
 close(h); 
