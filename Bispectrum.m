@@ -604,14 +604,17 @@ display_selection = get(handles.display_type,'Value');
         elseif display_selection == 6
             [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{2,1}, handles.WT{1,1}, handles.freqarr, f1, f2, fs, fc);
         end
-        [M,I] = max(handles.biamp);
-        text(handles.bisp_amp_axis,time_axis(I),M,num2str(size(list,1)));  
-        [M,I] = max(handles.biphase);
-        text(handles.bisp_phase_axis,time_axis(I),M,num2str(size(list,1)));  
+        
         plot(handles.bisp_amp_axis, time_axis, handles.biamp);
         grid(handles.bisp_amp_axis,'on');
         plot(handles.bisp_phase_axis, time_axis, handles.biphase); 
         grid(handles.bisp_phase_axis,'on');
+        
+        [M,I] = max(handles.biamp);
+        text(handles.bisp_amp_axis,time_axis(I),M,num2str(size(list,1)));  
+        [M,I] = max(handles.biphase);
+        text(handles.bisp_phase_axis,time_axis(I),M,num2str(size(list,1)));  
+        
         ylabel(handles.bisp_amp_axis,'Biamplitdue');
         ylabel(handles.bisp_phase_axis,'Biphase');
         xlabel(handles.bisp_phase_axis,'Time (s)');        
@@ -638,6 +641,8 @@ if display_selection<=2 || display_selection>=7
 end
 cla(handles.bisp_amp_axis,'reset');
 cla(handles.bisp_phase_axis,'reset');
+set(handles.bisp_amp_axis,'fontunits','normalized');
+set(handles.bisp_phase_axis,'fontunits','normalized');
 clear_axes_points(handles.bisp);
 
 % --- Executes on key press with focus on frequency_select and none of its controls.
@@ -690,29 +695,68 @@ switch eventdata.Key
             elseif display_selection == 6
                 [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{2,1}, handles.WT{1,1}, handles.freqarr, fl(1), fl(2), fs, fc);
             end
+                                   
+            plot(handles.bisp_amp_axis, time_axis, handles.biamp);
+            grid(handles.bisp_amp_axis,'on');
+            plot(handles.bisp_phase_axis, time_axis, handles.biphase); 
+            grid(handles.bisp_phase_axis,'on');
             
             [M,I] = max(handles.biamp);
             text(handles.bisp_amp_axis,time_axis(I), M,num2str(frequency_selected(i)));  
             [M,I] = max(handles.biphase);
             text(handles.bisp_phase_axis,time_axis(I), M,num2str(frequency_selected(i)));  
             
-            plot(handles.bisp_amp_axis, time_axis, handles.biamp);
-            grid(handles.bisp_amp_axis,'on');
-            plot(handles.bisp_phase_axis, time_axis, handles.biphase); 
-            grid(handles.bisp_phase_axis,'on');
-            
             plot(handles.bisp, fl(1), fl(2), 'or')            
-        end
-            
+        end  
+        
+        case 'h'
+            frequency_selected = get(handles.frequency_select,'Value');
+            child_handles = flipud(allchild(handles.bisp_amp_axis));
+            for i = 1:2:size(child_handles,1)       
+                if(strcmp(get(child_handles(i),'Type'),'line'))
+                    if any((i+1)/2 == frequency_selected)
+                        set(child_handles(i),'LineWidth',2);
+                    end
+                end
+            end
+            child_handles = flipud(allchild(handles.bisp_phase_axis));
+            for i = 1:2:size(child_handles,1)       
+                if(strcmp(get(child_handles(i),'Type'),'line'))
+                    if any((i+1)/2 == frequency_selected)
+                        set(child_handles(i),'LineWidth',2);
+                    end
+                end
+            end
+    case 'd'
+        frequency_selected = get(handles.frequency_select,'Value');
+            child_handles = flipud(allchild(handles.bisp_amp_axis));
+            for i = 1:2:size(child_handles,1)       
+                if(strcmp(get(child_handles(i),'Type'),'line'))
+                    if any((i+1)/2 == frequency_selected)
+                        set(child_handles(i),'LineWidth',1);
+                    end
+                end
+            end
+            child_handles = flipud(allchild(handles.bisp_phase_axis));
+            for i = 1:2:size(child_handles,1)       
+                if(strcmp(get(child_handles(i),'Type'),'line'))
+                    if any((i+1)/2 == frequency_selected)
+                        set(child_handles(i),'LineWidth',1);
+                    end
+                end
+            end
 end
 
 function frequency_select_Callback(hObject, eventdata, handles)
 display_selection = get(handles.display_type,'Value');
+
 if display_selection<=2 || display_selection>=7
     return;
 end
 frequency_list = get(handles.frequency_select,'String');
 frequency_selected = get(handles.frequency_select,'Value');
+
+%Clearing unchosen points
 child_handles = allchild(handles.bisp);
 for i = 1:size(child_handles,1)    
     if(strcmp(get(child_handles(i),'Type'),'line'))
@@ -723,10 +767,13 @@ for i = 1:size(child_handles,1)
         end
     end
 end
+%Plotting chosen points
 for i = 1:size(frequency_selected,2)
     fl = csv_to_mvar(cell2mat(frequency_list(frequency_selected(i),1)));            
     plot(handles.bisp, fl(1), fl(2), '*r')            
 end
+
+
 
 function freq_2_Callback(hObject, eventdata, handles)
 display_selection = get(handles.display_type,'Value');
@@ -932,10 +979,11 @@ function plot_type_SelectionChangeFcn(hObject, eventdata, handles)
         case 'amp'
             plot_type = 2;
     end
-
-    data = guidata(hObject);
-    data.plot_type = plot_type;
-    guidata(hObject,data); 
+    
+    handles.plot_type = plot_type;    
+    guidata(hObject,handles);
+    display_type_Callback(hObject, eventdata, handles)
+    guidata(hObject,handles); 
 
 % ----------------------------------------Saving Files---------------
 function save_Callback(hObject, eventdata, handles)
@@ -973,4 +1021,5 @@ function save_wt_Callback(hObject, eventdata, handles)
 function detrend_signal_popup_Callback(hObject, eventdata, handles)
 %Detrends the signal plots the chosen one
     cla(handles.plot_pp,'reset');
+    set(handles.plot_pp,'fontunits','normalized');
     preprocess_Callback(hObject, eventdata, handles);
