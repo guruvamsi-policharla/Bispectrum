@@ -5,7 +5,7 @@
 %---------------------------Credits----------------------------------------
 %Wavelet Transform: Dmytro Iatsenko
 %----------------------------Documentation---------------------------------
-%Comnig Soon
+%Coming Soon
 
 
 
@@ -601,6 +601,7 @@ display_selection = get(handles.display_type,'Value');
         end       
         sz = size(list,1);
         set(handles.frequency_select,'String',list,'Max',sz,'Value',1);
+        drawnow;
         %Verify Calculation from Ola
         if display_selection == 3
             [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{1,1}, handles.WT{1,1}, handles.freqarr, f1, f2, fs, fc);
@@ -626,7 +627,7 @@ display_selection = get(handles.display_type,'Value');
         ylabel(handles.bisp_amp_axis,'Biamplitdue');
         ylabel(handles.bisp_phase_axis,'Biphase');
         xlabel(handles.bisp_phase_axis,'Time (s)');        
-        guidata(hObject, handles);
+        
         %Marking the point 
         child_handles = allchild(handles.bisp);
         for i = 1:size(child_handles,1)    
@@ -639,7 +640,14 @@ display_selection = get(handles.display_type,'Value');
             end
         end
         plot(handles.bisp,f1,f2,'or');
-        
+        handles.freq_plot_list = {};
+        for i = 1:size(list,1)
+            temp = list{i,1};
+            if temp(1,end) == 'n'
+                handles.freq_plot_list{i,1} = temp(1:end-5); 
+            end
+        end
+        guidata(hObject, handles);
     end
 
 function bisp_clear_Callback(hObject, eventdata, handles)
@@ -658,7 +666,7 @@ if ~isempty(list)
     sz = size(list,1);
     set(handles.frequency_select,'String',list,'Max',sz,'Value',1);
 end
-
+handles.freq_plot_list = {};
 cla(handles.bisp_amp_axis,'reset');
 cla(handles.bisp_phase_axis,'reset');
 set(handles.bisp_amp_axis,'fontunits','normalized');
@@ -723,7 +731,7 @@ switch eventdata.Key
             temp = cell2mat(frequency_list(frequency_selected(i),1));
             temp(end-2:end) = [' ','o','n'];
             frequency_list{frequency_selected(i),1} = temp;
-            temp = temp(1:end-4);
+            temp = temp(1:end-5);
             handles.freq_plot_list{i,1} = temp; 
             fl = csv_to_mvar(temp);              
             
@@ -765,7 +773,7 @@ switch eventdata.Key
             child_handles = flipud(allchild(handles.bisp_amp_axis));  
             for i = 1:size(frequency_selected,2)
                 temp = list{frequency_selected(i),1};
-                temp = temp(1:end-4);
+                temp = temp(1:end-5);
                 idx = find(ismember(handles.freq_plot_list,temp));
                 if(strcmp(get(child_handles(2*idx-1),'Type'),'line'))
                     set(child_handles(2*idx-1),'LineWidth',2);
@@ -775,7 +783,7 @@ switch eventdata.Key
             child_handles = flipud(allchild(handles.bisp_phase_axis));
             for i = 1:size(frequency_selected,2)
                 temp = list{frequency_selected(i),1};
-                temp = temp(1:end-4);
+                temp = temp(1:end-5);
                 idx = find(ismember(handles.freq_plot_list,temp));
                 if(strcmp(get(child_handles(2*idx-1),'Type'),'line'))
                     set(child_handles(2*idx-1),'LineWidth',2);
@@ -789,7 +797,7 @@ switch eventdata.Key
             child_handles = flipud(allchild(handles.bisp_amp_axis));  
             for i = 1:size(frequency_selected,2)
                 temp = list{frequency_selected(i),1};
-                temp = temp(1:end-4);
+                temp = temp(1:end-5);
                 idx = find(ismember(handles.freq_plot_list,temp));
                 if(strcmp(get(child_handles(2*idx-1),'Type'),'line'))
                     set(child_handles(2*idx-1),'LineWidth',1);
@@ -799,7 +807,7 @@ switch eventdata.Key
             child_handles = flipud(allchild(handles.bisp_phase_axis));
             for i = 1:size(frequency_selected,2)
                 temp = list{frequency_selected(i),1};
-                temp = temp(1:end-4);
+                temp = temp(1:end-5);
                 idx = find(ismember(handles.freq_plot_list,temp));
                 if(strcmp(get(child_handles(2*idx-1),'Type'),'line'))
                     set(child_handles(2*idx-1),'LineWidth',1);

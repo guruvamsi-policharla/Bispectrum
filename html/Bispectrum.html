@@ -1,0 +1,2259 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Bispectrum</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-03"><meta name="DC.source" content="Bispectrum.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Version 1.00</span>
+<span class="comment">%**************************************************************************</span>
+<span class="comment">%***************************** Bispectrum GUI ******************************</span>
+<span class="comment">%**************************************************************************</span>
+<span class="comment">%---------------------------Credits----------------------------------------</span>
+<span class="comment">%Wavelet Transform: Dmytro Iatsenko</span>
+<span class="comment">%----------------------------Documentation---------------------------------</span>
+<span class="comment">%Comnig Soon</span>
+
+
+
+<span class="keyword">function</span> varargout = Bispectrum(varargin)
+<span class="comment">% BISPECTRUM MATLAB code for Bispectrum.fig</span>
+<span class="comment">%      BISPECTRUM, by itself, creates a new BISPECTRUM or raises the existing</span>
+<span class="comment">%      singleton*.</span>
+<span class="comment">%</span>
+<span class="comment">%      H = BISPECTRUM returns the handle to a new BISPECTRUM or the handle to</span>
+<span class="comment">%      the existing singleton*.</span>
+<span class="comment">%</span>
+<span class="comment">%      BISPECTRUM('CALLBACK',hObject,eventData,handles,...) calls the local</span>
+<span class="comment">%      function named CALLBACK in BISPECTRUM.M with the given input arguments.</span>
+<span class="comment">%</span>
+<span class="comment">%      BISPECTRUM('Property','Value',...) creates a new BISPECTRUM or raises the</span>
+<span class="comment">%      existing singleton*.  Starting from the left, property value pairs are</span>
+<span class="comment">%      applied to the GUI before Bispectrum_OpeningFcn gets called.  An</span>
+<span class="comment">%      unrecognized property name or invalid value makes property application</span>
+<span class="comment">%      stop.  All inputs are passed to Bispectrum_OpeningFcn via varargin.</span>
+<span class="comment">%</span>
+<span class="comment">%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one</span>
+<span class="comment">%      instance to run (singleton)".</span>
+<span class="comment">%</span>
+<span class="comment">% See also: GUIDE, GUIDATA, GUIHANDLES</span>
+
+
+<span class="comment">% Edit the above text to modify the response to help Bispectrum</span>
+
+<span class="comment">% Last Modified by GUIDE v2.5 30-Jun-2017 17:38:59</span>
+<span class="comment">%*************************************************************************%</span>
+<span class="comment">%                BEGIN initialization code - DO NOT EDIT                  %</span>
+<span class="comment">%                ----------------------------------------                 %</span>
+<span class="comment">%*************************************************************************%</span>
+gui_Singleton = 1;
+gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+                   <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+                   <span class="string">'gui_OpeningFcn'</span>, @Bispectrum_OpeningFcn, <span class="keyword">...</span>
+                   <span class="string">'gui_OutputFcn'</span>,  @Bispectrum_OutputFcn, <span class="keyword">...</span>
+                   <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+                   <span class="string">'gui_Callback'</span>,   []);
+<span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+<span class="keyword">else</span>
+    gui_mainfcn(gui_State, varargin{:});
+<span class="keyword">end</span>
+<span class="comment">%*************************************************************************%</span>
+<span class="comment">%                END initialization code - DO NOT EDIT                    %</span>
+<span class="comment">%*************************************************************************%</span>
+
+
+<span class="keyword">function</span> Bispectrum_OpeningFcn(hObject, eventdata, handles, varargin)
+movegui(<span class="string">'center'</span>)
+axes(handles.logo)
+matlabImage = imread(<span class="string">'physicslogo.png'</span>);
+image(matlabImage)
+axis <span class="string">off</span>
+axis <span class="string">image</span>
+h = findall(0,<span class="string">'Type'</span>,<span class="string">'uicontrol'</span>);
+set(h,<span class="string">'FontUnits'</span>,<span class="string">'normalized'</span>);
+<span class="comment">%set(gcbo,'DefaultAxesFontUnits','normalized')</span>
+handles.output = hObject;
+guidata(hObject, handles);
+
+<span class="keyword">function</span> varargout = Bispectrum_OutputFcn(hObject, eventdata, handles)
+varargout{1} = handles.output;
+<span class="keyword">function</span> plot_type_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">function</span> wavlet_transform_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">function</span> signal_name_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> signal_name_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> orientation_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> orientation_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> sampling_freq_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> sampling_freq_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> max_freq_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> status_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> status_CreateFcn(hObject, eventdata, handles)
+set(hObject,<span class="string">'String'</span>,<span class="string">'Please Import Signal'</span>);
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> max_freq_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> min_freq_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> min_freq_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> wavelet_type_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> wavelet_type_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> central_freq_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> central_freq_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> preprocess_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> cutedges_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> cutedges_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> sampling_rate_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> length_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> length_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> intervals_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> xlim_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> ylim_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> detrend_signal_popup_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> display_type_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> surrogate_percentile_Callback(hObject, eventdata, handles)
+set(hObject,<span class="string">'Enable'</span>,<span class="string">'off'</span>);
+<span class="keyword">function</span> surrogate_percentile_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> sampling_rate_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> bisp_ord_Callback(hObject, eventdata, handles)
+<span class="keyword">function</span> bisp_ord_CreateFcn(hObject, eventdata, handles)
+
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> freq_1_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> freq_2_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+<span class="keyword">function</span> frequency_select_CreateFcn(hObject, eventdata, handles)
+<span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+    set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+<span class="keyword">end</span>
+
+<span class="comment">%--------------------------------------------------Unused Callbacks--------</span>
+
+<span class="keyword">function</span> intervals_Callback(hObject, eventdata, handles)
+<span class="comment">%Marking lines on the graphs</span>
+    intervals = csv_to_mvar(get(handles.intervals,<span class="string">'String'</span>));
+    display_selected = get(handles.display_type,<span class="string">'Value'</span>);
+    <span class="keyword">if</span>(size(intervals)&gt;0)
+        zval = 1;
+        child_handles = allchild(handles.wt_pane);
+        <span class="keyword">if</span>(display_selected == 1 || display_selected == 2)
+            <span class="keyword">for</span> i = 1:size(child_handles,1)
+                <span class="keyword">if</span>(strcmp(get(child_handles(i),<span class="string">'Type'</span>),<span class="string">'axes'</span>))
+                    set(child_handles(i),<span class="string">'Ytick'</span>,intervals);
+                    hold(child_handles(i),<span class="string">'on'</span>);
+                    warning(<span class="string">'off'</span>);
+
+                        <span class="keyword">for</span> j = 1:size(intervals,2)
+                            xl = get(child_handles(i),<span class="string">'xlim'</span>);
+                            x = [xl(1) xl(2)];
+                            z = ones(1,size(x,2));
+                            z = z.*zval;
+                            y = intervals(j)*ones(1,size(x,2));
+                            plot3(child_handles(i),x,y,z,<span class="string">'--k'</span>);
+                        <span class="keyword">end</span>
+
+                    warning(<span class="string">'on'</span>);
+                    hold(child_handles(i),<span class="string">'off'</span>);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">elseif</span> display_selected &gt;=3
+            <span class="keyword">for</span> j = 1:size(intervals,2)
+                yl = get(handles.bisp_amp_axis,<span class="string">'ylim'</span>);
+                y = [yl(1) yl(2)];
+                x = intervals(j)*ones(1,size(y,2));
+                plot(handles.bisp_amp_axis,x,y,<span class="string">'--k'</span>)
+                yl = get(handles.bisp_phase_axis,<span class="string">'ylim'</span>);
+                y = [yl(1) yl(2)];
+                x = intervals(j)*ones(1,size(y,2));
+                plot(handles.bisp_phase_axis,x,y,<span class="string">'--k'</span>)
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+
+<span class="keyword">function</span> preprocess_Callback(hObject, eventdata, handles)
+<span class="comment">%Detrending Part Visualisation</span>
+    data = guidata(hObject);
+    sig = data.sig;
+    time_axis = data.time_axis;
+    L = size(sig,2);
+    fs = str2double(get(handles.sampling_freq,<span class="string">'String'</span>));
+    fmax = str2double(get(handles.max_freq,<span class="string">'String'</span>));
+    fmin = str2double(get(handles.min_freq,<span class="string">'String'</span>));
+
+    contents = cellstr(get(handles.detrend_signal_popup,<span class="string">'String'</span>));
+    i = contents{get(handles.detrend_signal_popup,<span class="string">'Value'</span>)};
+    i = str2double(i);
+
+    <span class="comment">%Detrending</span>
+    cur_sig = sig(i,:);
+    cur_sig = cur_sig(:);
+    X=(1:length(cur_sig))'/fs; XM=ones(length(X),4);
+
+    <span class="keyword">for</span> pn=1:3
+        CX=X.^pn;
+        XM(:,pn+1)=(CX-mean(CX))/std(CX);
+    <span class="keyword">end</span>
+
+    w=warning(<span class="string">'off'</span>,<span class="string">'all'</span>);
+    new_signal=cur_sig-XM*(pinv(XM)*cur_sig);
+    warning(w);
+
+    <span class="comment">%Filtering</span>
+    fx=fft(new_signal,L); <span class="comment">% Fourier transform of a signal</span>
+
+    Nq=ceil((L+1)/2);
+    ff=[(0:Nq-1),-fliplr(1:L-Nq)]*fs/L;
+    ff=ff(:); <span class="comment">% frequencies in Fourier transform</span>
+
+    fx(abs(ff)&lt;=max([fmin,fs/L]) | abs(ff)&gt;=fmax)=0; <span class="comment">% filter signal in a chosen frequency domain</span>
+    new_signal=ifft(fx);
+    <span class="comment">%Plotting</span>
+
+    plot(handles.plot_pp,time_axis,cur_sig);
+    hold(handles.plot_pp,<span class="string">'on'</span>);
+    plot(handles.plot_pp,time_axis,new_signal,<span class="string">'-r'</span>);
+    set(handles.plot_pp,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>);
+
+    <span class="comment">%legend(handles.plot_pp,'Original','Pre-Processed','Location','Best');</span>
+    xlim(handles.plot_pp,[0,size(sig,2)./fs]);
+<span class="comment">%-------------------------------------------------------------------------</span>
+
+<span class="keyword">function</span> wavlet_transform_Callback(hObject, eventdata, handles)
+<span class="comment">%Does the wavelet transform</span>
+<span class="comment">% Get user input from GUI</span>
+
+    set(handles.status,<span class="string">'String'</span>,<span class="string">'Calculating Wavelet Transform...'</span>);
+    fs = str2double(get(handles.sampling_freq,<span class="string">'String'</span>));
+    fmax = str2double(get(handles.max_freq,<span class="string">'String'</span>));
+    fmin = str2double(get(handles.min_freq,<span class="string">'String'</span>));
+    fc =  str2double(get(handles.central_freq,<span class="string">'String'</span>));
+    ord = str2double(get(handles.bisp_ord,<span class="string">'String'</span>));
+    wavelet_type_selected = <span class="string">'Morlet'</span>;
+
+    items = get(handles.preprocess,<span class="string">'String'</span>);
+    index_selected = get(handles.preprocess,<span class="string">'Value'</span>);
+    preprocess_selected = items{index_selected};
+
+    items = get(handles.cutedges,<span class="string">'String'</span>);
+    index_selected = get(handles.cutedges,<span class="string">'Value'</span>);
+    cutedges_selected = items{index_selected};
+
+    sig = handles.sig;
+
+    n = size(sig,1) ;
+    handles.WT = cell(n, 1);
+
+    <span class="keyword">if</span> isnan(ord)
+      errordlg(<span class="string">'Order must be specified'</span>,<span class="string">'Parameter Error'</span>);
+      <span class="keyword">return</span>
+    <span class="keyword">end</span>
+
+<span class="comment">%Taking only selected part of the signal</span>
+    xl = get(handles.xlim,<span class="string">'String'</span>);
+    xl = csv_to_mvar(xl);
+    xl = xl.*fs;
+    xl(2) = min(xl(2),size(sig,2));
+    xl(1) = max(xl(1),1);
+    sig = sig(:,xl(1):xl(2));
+    xl = xl./fs;
+
+    set(handles.status,<span class="string">'String'</span>,<span class="string">'Calculating Wavelet Transform...'</span>);
+    <span class="comment">%Calculating wavelet transform and deciding parameter form</span>
+    <span class="keyword">if</span>(isnan(fmax)&amp;&amp; isnan(fmin))
+        <span class="keyword">if</span>(isnan(fc))
+            <span class="keyword">for</span> p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,<span class="string">'CutEdges'</span>,cutedges_selected,<span class="keyword">...</span>
+                <span class="string">'Preprocess'</span>,preprocess_selected,<span class="string">'Wavelet'</span>,wavelet_type_selected);
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>
+            <span class="keyword">for</span> p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,<span class="string">'CutEdges'</span>,cutedges_selected,<span class="keyword">...</span>
+                <span class="string">'Preprocess'</span>,preprocess_selected,<span class="string">'Wavelet'</span>,wavelet_type_selected,<span class="string">'f0'</span>,fc);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">elseif</span>(isnan(fmax))
+        <span class="keyword">if</span>(isnan(fc))
+            <span class="keyword">for</span> p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,<span class="string">'fmin'</span>,fmin,<span class="string">'CutEdges'</span>,cutedges_selected,<span class="keyword">...</span>
+                <span class="string">'Preprocess'</span>,preprocess_selected,<span class="string">'Wavelet'</span>,wavelet_type_selected);
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>
+            <span class="keyword">for</span> p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,<span class="string">'fmin'</span>,fmin,<span class="string">'CutEdges'</span>,cutedges_selected,<span class="keyword">...</span>
+                <span class="string">'Preprocess'</span>,preprocess_selected,<span class="string">'Wavelet'</span>,wavelet_type_selected,<span class="string">'f0'</span>,fc);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">elseif</span>(isnan(fmin))
+        <span class="keyword">if</span>(isnan(fc))
+            <span class="keyword">for</span> p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,<span class="string">'fmax'</span>,fmax,<span class="string">'CutEdges'</span>,cutedges_selected,<span class="keyword">...</span>
+                <span class="string">'Preprocess'</span>,preprocess_selected,<span class="string">'Wavelet'</span>,wavelet_type_selected);
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>
+            <span class="keyword">for</span> p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,<span class="string">'fmax'</span>,fmax,<span class="string">'CutEdges'</span>,cutedges_selected,<span class="keyword">...</span>
+                <span class="string">'Preprocess'</span>,preprocess_selected,<span class="string">'Wavelet'</span>,wavelet_type_selected,<span class="string">'f0'</span>,fc);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">else</span>
+        <span class="keyword">if</span>(isnan(fc))
+            <span class="keyword">for</span> p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,<span class="string">'fmin'</span>,fmin,<span class="string">'fmax'</span>,fmax,<span class="string">'CutEdges'</span>,cutedges_selected,<span class="keyword">...</span>
+                <span class="string">'Preprocess'</span>,preprocess_selected,<span class="string">'Wavelet'</span>,wavelet_type_selected);
+            <span class="keyword">end</span>
+        <span class="keyword">else</span>
+            <span class="keyword">for</span> p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,<span class="string">'fmin'</span>,fmin,<span class="string">'fmax'</span>,fmax,<span class="string">'CutEdges'</span>,cutedges_selected,<span class="keyword">...</span>
+                <span class="string">'Preprocess'</span>,preprocess_selected,<span class="string">'Wavelet'</span>,wavelet_type_selected,<span class="string">'f0'</span>,fc);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">%---------------</span>
+
+    handles.amp_WT = cell(n,1);
+    handles.pow_WT = cell(n,1);
+    handles.pow_arr = cell(n,1);
+    handles.amp_arr = cell(n,1);
+
+    <span class="comment">%write the averaging function and the max function</span>
+
+    <span class="keyword">for</span> p = 1:n
+        handles.amp_WT{p,1} = abs(handles.WT{p,1});
+        handles.pow_WT{p,1} = abs(handles.WT{p,1}).^2;
+        handles.pow_arr{p,1} = nanmean(handles.pow_WT{p,1}.');<span class="comment">%Calculating Average Power</span>
+        handles.amp_arr{p,1} = nanmean(handles.amp_WT{p,1}.');<span class="comment">%Calculating Average Amplitude</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">%Calculating the Bispectrum</span>
+    [handles.bxxx, handles.bppp, handles.bpxx, handles.bxpp] = bispectrum(sig(1,:), sig(2,:),<span class="keyword">...</span>
+        handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, .01, ord, fs, fc);
+
+    handles.sig_cut = sig;
+
+    guidata(hObject,handles);
+    display_type_Callback(handles.display_type, eventdata, handles);
+    guidata(hObject,handles);
+
+    set(handles.display_type,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+    set(handles.intervals,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+
+<span class="keyword">function</span> display_type_Callback(hObject, eventdata, handles)
+set(handles.freq_1,<span class="string">'String'</span>,<span class="string">''</span>);
+set(handles.freq_2,<span class="string">'String'</span>,<span class="string">''</span>);
+display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+
+set(handles.status,<span class="string">'String'</span>,<span class="string">'Plotting Data'</span>);
+
+sig = handles.sig;
+fs = str2double(get(handles.sampling_freq,<span class="string">'String'</span>));
+
+xl = csv_to_mvar(get(handles.xlim,<span class="string">'String'</span>));
+xl = xl.*fs;
+xl(2) = min(xl(2),size(sig,2));
+xl(1) = max(xl(1),1);
+xl = xl./fs;
+time_axis = xl(1):1/fs:xl(2);
+
+<span class="keyword">if</span> length(time_axis)&gt;=2000
+    screensize = max(get(groot,<span class="string">'Screensize'</span>));
+    n = floor(size(sig,2)/screensize);<span class="comment">%TODO improve reliability with screens</span>
+<span class="keyword">else</span>
+    n = 1;
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> (display_selection == 1 || display_selection == 2) &amp;&amp; isfield(handles,<span class="string">'WT'</span>)
+
+    clear_pane_axes(handles.wt_pane);
+    <span class="comment">%Deciding the plot type</span>
+
+        <span class="comment">%Actual Plotting</span>
+        <span class="comment">%-------------------------Surf Plot------------------------------------</span>
+
+        position = [0.06 0.122 0.6 0.849];
+        handles.plot3d = subplot(1,3,[1 2],<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position);
+        position = [.78 .122 .196 .849];
+        handles.plot_pow = subplot(1,3,3,<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position);
+
+        <span class="keyword">if</span>(handles.plot_type == 1)
+            handles.peak_value = max(handles.pow_WT{display_selection,1}(:))+.1;
+            pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{display_selection,1}(1:end,1:n:end));
+            zlabel(handles.plot3d,<span class="string">'Power'</span>);
+            plot(handles.plot_pow ,handles.pow_arr{display_selection,1}, handles.freqarr,<span class="string">'-k'</span>,<span class="string">'LineWidth'</span>,3 );
+        <span class="keyword">else</span>
+            handles.peak_value = max(handles.amp_WT{display_selection,1}(:))+.1;
+            pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{display_selection,1}(1:end,1:n:end));
+            zlabel(handles.plot3d,<span class="string">'Amplitude'</span>);
+            plot(handles.plot_pow ,handles.amp_arr{display_selection,1}, handles.freqarr,<span class="string">'-k'</span>,<span class="string">'LineWidth'</span>,3 );
+        <span class="keyword">end</span>
+
+        shading(handles.plot3d,<span class="string">'interp'</span>);
+        set(handles.plot3d,<span class="string">'yscale'</span>,<span class="string">'log'</span>);
+        set(handles.plot3d,<span class="string">'ylim'</span>,[min(handles.freqarr) max(handles.freqarr)]);<span class="comment">%making the axes tight</span>
+        set(handles.plot3d,<span class="string">'xlim'</span>,[time_axis(1) time_axis(end)]);<span class="comment">%making the axes tight</span>
+        xlabel(handles.plot3d,<span class="string">'Time (s)'</span>);
+        ylabel(handles.plot3d,<span class="string">'Frequency (Hz)'</span>);
+        c = colorbar(handles.plot3d,<span class="string">'Location'</span>,<span class="string">'east'</span>);
+        set(c, <span class="string">'position'</span>,[0.675 .12 .015 .85],<span class="string">'Linewidth'</span>,0.2);
+        set(c, <span class="string">'fontsize'</span>,8,<span class="string">'units'</span>,<span class="string">'normalized'</span>);
+
+        <span class="comment">%------------------------Power Plot------------------------------------</span>
+
+        set(handles.plot_pow,<span class="string">'yscale'</span>,<span class="string">'log'</span>);
+        ylim(handles.plot_pow,[min(handles.freqarr) max(handles.freqarr)]);
+        set(handles.status,<span class="string">'String'</span>,<span class="string">'Done Plotting'</span>);
+        <span class="keyword">if</span>(handles.plot_type == 1)
+            xlabel(handles.plot_pow,<span class="string">'Average Power'</span>);
+        <span class="keyword">else</span>
+            xlabel(handles.plot_pow,<span class="string">'Average Amplitude'</span>);
+        <span class="keyword">end</span>
+        ylabel(handles.plot_pow,<span class="string">'Frequency (Hz)'</span>);
+        guidata(hObject,handles);
+        <span class="comment">%set(handles.plot3d,'fontunits','normalized');</span>
+<span class="keyword">elseif</span> display_selection == 3 || display_selection == 4 || display_selection == 5 || display_selection == 6
+     <span class="comment">%Plotting bispectrum</span>
+        clear_pane_axes(handles.wt_pane);
+        position = [0.06 0.12 0.432 0.8];
+        handles.bisp = axes(<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>);
+        position = [.56 .55 .42 .42];
+        handles.bisp_amp_axis = axes(<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>);
+        position = [.56 .09 .42 .42];
+        handles.bisp_phase_axis = axes(<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>);
+        <span class="keyword">if</span> display_selection == 3
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxxx)
+        <span class="keyword">elseif</span> display_selection == 4
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bppp)
+        <span class="keyword">elseif</span> display_selection == 5
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxpp)
+        <span class="keyword">elseif</span> display_selection == 6
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bpxx)
+        <span class="keyword">end</span>
+        set(handles.bisp, <span class="string">'yscale'</span>,<span class="string">'log'</span>,<span class="string">'xscale'</span>,<span class="string">'log'</span>);
+        grid(handles.bisp,<span class="string">'on'</span>);
+        idx_first = find(sum(~isnan(handles.bxxx),1) &gt; 0, 1 ,<span class="string">'first'</span>);
+        idx_last = find(sum(~isnan(handles.bxxx),1) &gt; 0, 1 , <span class="string">'last'</span>);
+        xlim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
+        ylim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
+        xlabel(handles.bisp,<span class="string">'Frequency (Hz)'</span>);
+        ylabel(handles.bisp,<span class="string">'Frequency (Hz)'</span>);
+        shading(handles.bisp,<span class="string">'interp'</span>);
+        set(handles.bisp,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>,<span class="string">'fontsize'</span>,0.03);
+        title(handles.bisp,<span class="string">'Bispectrum'</span>,<span class="string">'fontsize'</span>,14,<span class="string">'fontweight'</span>,<span class="string">'normal'</span>);
+
+
+        guidata(hObject,handles);
+
+<span class="keyword">elseif</span> display_selection == 7 &amp;&amp; isfield(handles,<span class="string">'WT'</span>)
+    <span class="comment">%Plotting all plots</span>
+        clear_pane_axes(handles.wt_pane);
+        position = [.08 .58 .22 .40];
+        handles.bispxxx = axes(<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position);
+        position = [.35 .58 .22 .40];
+        handles.bispxpp = axes(<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position);
+        position = [.08 .12 .22 .40];
+        handles.bisppxx = axes(<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position);
+        position = [.35 .12 .22 .40];
+        handles.bispppp = axes(<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position);
+
+        position = [.64 .58 .34 .40];
+        handles.wt_1 = axes(<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position);
+        position = [.64 .12 .34 .40];
+        handles.wt_2 = axes(<span class="string">'Parent'</span>,handles.wt_pane,<span class="string">'position'</span>,position);
+
+        pcolor(handles.bispxxx, handles.freqarr, handles.freqarr, handles.bxxx)
+        pcolor(handles.bispppp, handles.freqarr, handles.freqarr, handles.bppp)
+        pcolor(handles.bisppxx, handles.freqarr, handles.freqarr, handles.bpxx)
+        pcolor(handles.bispxpp, handles.freqarr, handles.freqarr, handles.bxpp)
+
+        <span class="keyword">if</span>(handles.plot_type == 1)
+            pcolor(handles.wt_1, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{1,1}(1:end,1:n:end));
+            pcolor(handles.wt_2, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{2,1}(1:end,1:n:end));
+        <span class="keyword">else</span>
+            pcolor(handles.wt_1, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{1,1}(1:end,1:n:end));
+            pcolor(handles.wt_2, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{2,1}(1:end,1:n:end));
+        <span class="keyword">end</span>
+
+        shading(handles.wt_1,<span class="string">'interp'</span>);
+        shading(handles.wt_2,<span class="string">'interp'</span>);
+        ylabel(handles.wt_1,<span class="string">'Frequency (Hz)'</span>);
+        xlabel(handles.wt_2,<span class="string">'Time (s)'</span>);
+        ylabel(handles.wt_2,<span class="string">'Frequency (Hz)'</span>);
+
+        idx_first = find(sum(~isnan(handles.bxxx),1) &gt; 0, 1 ,<span class="string">'first'</span>);
+        idx_last = find(sum(~isnan(handles.bxxx),1) &gt; 0, 1 , <span class="string">'last'</span>);
+
+        child_handles = allchild(handles.wt_pane);
+        <span class="keyword">for</span> i = 4:size(child_handles,1)
+            <span class="keyword">if</span>(strcmp(get(child_handles(i),<span class="string">'Type'</span>),<span class="string">'axes'</span>))
+                shading(child_handles(i),<span class="string">'interp'</span>);
+                set(child_handles(i),<span class="string">'yscale'</span>,<span class="string">'log'</span>);
+                set(child_handles(i),<span class="string">'xscale'</span>,<span class="string">'log'</span>);
+                xlim(child_handles(i),[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
+                ylim(child_handles(i),[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        set(handles.wt_1,<span class="string">'yscale'</span>,<span class="string">'log'</span>,<span class="string">'ylim'</span>,[handles.freqarr(idx_first) handles.freqarr(idx_last)], <span class="string">'xlim'</span>,[time_axis(1) time_axis(end)],<span class="keyword">...</span>
+        <span class="string">'zdir'</span>,<span class="string">'reverse'</span>);
+        set(handles.wt_2,<span class="string">'yscale'</span>,<span class="string">'log'</span>,<span class="string">'ylim'</span>,[handles.freqarr(idx_first) handles.freqarr(idx_last)], <span class="string">'xlim'</span>,[time_axis(1) time_axis(end)],<span class="keyword">...</span>
+        <span class="string">'zdir'</span>,<span class="string">'reverse'</span>);
+        ylabel(handles.bispxxx,<span class="string">'Frequency(Hz)'</span>);
+        ylabel(handles.bisppxx,<span class="string">'Frequency(Hz)'</span>);
+        xlabel(handles.bisppxx,<span class="string">'Frequency(Hz)'</span>);
+        xlabel(handles.bispppp,<span class="string">'Frequency(Hz)'</span>);
+        guidata(hObject,handles);
+<span class="keyword">else</span>
+    error(<span class="string">'Calculate Before Plotting'</span>);
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">function</span> calculate_bisp_Callback(hObject, eventdata, handles)
+<span class="comment">%Plotting the Biphase and Biamp</span>
+display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+<span class="keyword">if</span> display_selection&lt;=2 || display_selection&gt;=7
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+    <span class="keyword">if</span>(display_selection&gt;=3 &amp;&amp; display_selection&lt;=6)
+        hold(handles.bisp_amp_axis,<span class="string">'on'</span>);
+        hold(handles.bisp_phase_axis,<span class="string">'on'</span>);
+        f1 = str2double(get(handles.freq_1,<span class="string">'String'</span>));
+        f2 = str2double(get(handles.freq_2,<span class="string">'String'</span>));
+        fs = str2double(get(handles.sampling_freq,<span class="string">'String'</span>));
+        fc =  str2double(get(handles.central_freq,<span class="string">'String'</span>));
+        xl = csv_to_mvar(get(handles.xlim,<span class="string">'String'</span>));
+        xl = xl.*fs;
+        xl(2) = min(xl(2),size(handles.sig,2));
+        xl(1) = max(xl(1),1);
+        xl = xl./fs;
+        time_axis = xl(1):1/fs:xl(2);
+        list = get(handles.frequency_select,<span class="string">'String'</span>);
+        <span class="keyword">if</span> isempty(list)
+            list = cell(1,1);
+            list{1,1} = sprintf(<span class="string">'%f,%f | on'</span>,f1,f2);
+        <span class="keyword">else</span>
+            list{size(list,1)+1,1} = sprintf(<span class="string">'%f,%f | on'</span>,f1,f2);
+        <span class="keyword">end</span>
+        sz = size(list,1);
+        set(handles.frequency_select,<span class="string">'String'</span>,list,<span class="string">'Max'</span>,sz,<span class="string">'Value'</span>,1);
+        <span class="comment">%Verify Calculation from Ola</span>
+        <span class="keyword">if</span> display_selection == 3
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{1,1}, handles.WT{1,1}, handles.freqarr, f1, f2, fs, fc);
+        <span class="keyword">elseif</span> display_selection == 4
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(2,:), handles.WT{2,1}, handles.WT{2,1}, handles.freqarr, f1, f2, fs, fc);
+        <span class="keyword">elseif</span> display_selection == 5
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(2,:), handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, f1, f2, fs, fc);
+        <span class="keyword">elseif</span> display_selection == 6
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{2,1}, handles.WT{1,1}, handles.freqarr, f1, f2, fs, fc);
+        <span class="keyword">end</span>
+
+        plot(handles.bisp_amp_axis, time_axis, handles.biamp);
+        grid(handles.bisp_amp_axis,<span class="string">'on'</span>);
+        plot(handles.bisp_phase_axis, time_axis, handles.biphase);
+        grid(handles.bisp_phase_axis,<span class="string">'on'</span>);
+
+        [M,I] = max(handles.biamp);
+        text(handles.bisp_amp_axis,time_axis(I),M,num2str(size(list,1)));
+        [M,I] = max(handles.biphase);
+        text(handles.bisp_phase_axis,time_axis(I),M,num2str(size(list,1)));
+
+        set(handles.bisp_amp_axis,<span class="string">'xticklabel'</span>,[]);
+        ylabel(handles.bisp_amp_axis,<span class="string">'Biamplitdue'</span>);
+        ylabel(handles.bisp_phase_axis,<span class="string">'Biphase'</span>);
+        xlabel(handles.bisp_phase_axis,<span class="string">'Time (s)'</span>);
+        guidata(hObject, handles);
+        <span class="comment">%Marking the point</span>
+        child_handles = allchild(handles.bisp);
+        <span class="keyword">for</span> i = 1:size(child_handles,1)
+            <span class="keyword">if</span>(strcmp(get(child_handles(i),<span class="string">'Type'</span>),<span class="string">'line'</span>))
+                xdat = get(child_handles(i),<span class="string">'XData'</span>);
+                mark = get(child_handles(i),<span class="string">'Marker'</span>);
+                <span class="keyword">if</span>(length(xdat) == 1 &amp;&amp; strcmp(mark,<span class="string">'*'</span>))
+                    set(child_handles(i),<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        plot(handles.bisp,f1,f2,<span class="string">'or'</span>);
+
+    <span class="keyword">end</span>
+
+<span class="keyword">function</span> bisp_clear_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+<span class="keyword">if</span> display_selection&lt;=2 || display_selection&gt;=7
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+
+list = get(handles.frequency_select,<span class="string">'String'</span>);
+<span class="keyword">if</span> ~isempty(list)
+    <span class="keyword">for</span> i = 1:length(list)
+        temp = list{i,1};
+        temp(end-2:end) = [<span class="string">'o'</span>,<span class="string">'f'</span>,<span class="string">'f'</span>];
+        list{i,1} = temp;
+    <span class="keyword">end</span>
+    sz = size(list,1);
+    set(handles.frequency_select,<span class="string">'String'</span>,list,<span class="string">'Max'</span>,sz,<span class="string">'Value'</span>,1);
+<span class="keyword">end</span>
+
+cla(handles.bisp_amp_axis,<span class="string">'reset'</span>);
+cla(handles.bisp_phase_axis,<span class="string">'reset'</span>);
+set(handles.bisp_amp_axis,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>);
+set(handles.bisp_phase_axis,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>);
+clear_axes_points(handles.bisp);
+
+<span class="comment">% --- Executes on key press with focus on frequency_select and none of its controls.</span>
+<span class="keyword">function</span> frequency_select_KeyPressFcn(hObject, eventdata, handles)
+display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+<span class="keyword">if</span> display_selection&lt;=2 || display_selection&gt;=7
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+<span class="keyword">switch</span> eventdata.Key
+
+    <span class="keyword">case</span> <span class="string">'delete'</span>
+        frequency_selected = get(handles.frequency_select,<span class="string">'Value'</span>);
+        <span class="keyword">if</span> min(frequency_selected)&gt;1
+            set(handles.frequency_select,<span class="string">'Value'</span>,min(frequency_selected)-1);
+        <span class="keyword">else</span>
+            set(handles.frequency_select,<span class="string">'Value'</span>,1);
+        <span class="keyword">end</span>
+        list = get(handles.frequency_select,<span class="string">'String'</span>);
+        list(frequency_selected,:) = [];
+        set(handles.frequency_select,<span class="string">'String'</span>,list);
+        drawnow;
+
+    <span class="keyword">case</span> <span class="string">'return'</span>
+        fs = str2double(get(handles.sampling_freq,<span class="string">'String'</span>));
+        fc =  str2double(get(handles.central_freq,<span class="string">'String'</span>));
+        display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+        frequency_list = get(handles.frequency_select,<span class="string">'String'</span>);
+        frequency_selected = get(handles.frequency_select,<span class="string">'Value'</span>);
+        <span class="comment">%Change everything to off</span>
+        <span class="keyword">if</span> ~isempty(frequency_list)
+            <span class="keyword">for</span> i = 1:length(frequency_list)
+                temp = frequency_list{i,1};
+                temp(end-2:end) = [<span class="string">'o'</span>,<span class="string">'f'</span>,<span class="string">'f'</span>];
+                frequency_list{i,1} = temp;
+            <span class="keyword">end</span>
+            sz = size(frequency_list,1);
+            set(handles.frequency_select,<span class="string">'String'</span>,frequency_list,<span class="string">'Max'</span>,sz,<span class="string">'Value'</span>,1);
+        <span class="keyword">end</span>
+
+        <span class="keyword">if</span> isempty(frequency_selected)
+            <span class="keyword">return</span>;
+        <span class="keyword">end</span>
+        xl = csv_to_mvar(get(handles.xlim,<span class="string">'String'</span>));
+        xl = xl.*fs;
+        xl(2) = min(xl(2),size(handles.sig,2));
+        xl(1) = max(xl(1),1);
+        xl = xl./fs;
+        time_axis = xl(1):1/fs:xl(2);
+
+        cla(handles.bisp_amp_axis);
+        cla(handles.bisp_phase_axis);
+        clear_axes_points(handles.bisp);
+        hold(handles.bisp_phase_axis,<span class="string">'on'</span>);
+        hold(handles.bisp_amp_axis,<span class="string">'on'</span>);
+        hold(handles.bisp,<span class="string">'on'</span>);
+        handles.freq_plot_list = cell(size(frequency_selected,2),1);
+        <span class="keyword">for</span> i = 1:size(frequency_selected,2)
+            temp = cell2mat(frequency_list(frequency_selected(i),1));
+            temp(end-2:end) = [<span class="string">' '</span>,<span class="string">'o'</span>,<span class="string">'n'</span>];
+            frequency_list{frequency_selected(i),1} = temp;
+            temp = temp(1:end-4);
+            handles.freq_plot_list{i,1} = temp;
+            fl = csv_to_mvar(temp);
+
+            <span class="keyword">if</span> display_selection == 3
+                [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{1,1}, handles.WT{1,1}, handles.freqarr, fl(1), fl(2), fs, fc);
+            <span class="keyword">elseif</span> display_selection == 4
+                [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(2,:), handles.WT{2,1}, handles.WT{2,1}, handles.freqarr, fl(1), fl(2), fs, fc);
+            <span class="keyword">elseif</span> display_selection == 5
+                [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(2,:), handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, fl(1), fl(2), fs, fc);
+            <span class="keyword">elseif</span> display_selection == 6
+                [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{2,1}, handles.WT{1,1}, handles.freqarr, fl(1), fl(2), fs, fc);
+            <span class="keyword">end</span>
+
+            plot(handles.bisp_amp_axis, time_axis, handles.biamp);
+            grid(handles.bisp_amp_axis,<span class="string">'on'</span>);
+            plot(handles.bisp_phase_axis, time_axis, handles.biphase);
+            grid(handles.bisp_phase_axis,<span class="string">'on'</span>);
+
+            [M,I] = max(handles.biamp);
+            text(handles.bisp_amp_axis,time_axis(I), M,num2str(frequency_selected(i)));
+            [M,I] = max(handles.biphase);
+            text(handles.bisp_phase_axis,time_axis(I), M,num2str(frequency_selected(i)));
+            set(handles.bisp_amp_axis,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>,<span class="string">'fontsize'</span>,0.05,<span class="string">'xticklabel'</span>,[]);
+            set(handles.bisp_phase_axis,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>,<span class="string">'fontsize'</span>,0.05);
+            ylabel(handles.bisp_amp_axis,<span class="string">'Biamplitdue'</span>);
+            ylabel(handles.bisp_phase_axis,<span class="string">'Biphase'</span>);
+            xlabel(handles.bisp_phase_axis,<span class="string">'Time (s)'</span>);
+            plot(handles.bisp, fl(1), fl(2), <span class="string">'or'</span>)
+
+        <span class="keyword">end</span>
+        sz = size(frequency_list,1);
+        set(handles.frequency_select,<span class="string">'String'</span>,frequency_list,<span class="string">'Max'</span>,sz,<span class="string">'Value'</span>,1);
+        guidata(hObject,handles);
+
+        <span class="keyword">case</span> <span class="string">'h'</span>
+            list = get(handles.frequency_select,<span class="string">'String'</span>);
+            frequency_selected = get(handles.frequency_select,<span class="string">'Value'</span>);
+
+            child_handles = flipud(allchild(handles.bisp_amp_axis));
+            <span class="keyword">for</span> i = 1:size(frequency_selected,2)
+                temp = list{frequency_selected(i),1};
+                temp = temp(1:end-4);
+                idx = find(ismember(handles.freq_plot_list,temp));
+                <span class="keyword">if</span>(strcmp(get(child_handles(2*idx-1),<span class="string">'Type'</span>),<span class="string">'line'</span>))
+                    set(child_handles(2*idx-1),<span class="string">'LineWidth'</span>,2);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+            child_handles = flipud(allchild(handles.bisp_phase_axis));
+            <span class="keyword">for</span> i = 1:size(frequency_selected,2)
+                temp = list{frequency_selected(i),1};
+                temp = temp(1:end-4);
+                idx = find(ismember(handles.freq_plot_list,temp));
+                <span class="keyword">if</span>(strcmp(get(child_handles(2*idx-1),<span class="string">'Type'</span>),<span class="string">'line'</span>))
+                    set(child_handles(2*idx-1),<span class="string">'LineWidth'</span>,2);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+    <span class="keyword">case</span> <span class="string">'d'</span>
+            list = get(handles.frequency_select,<span class="string">'String'</span>);
+            frequency_selected = get(handles.frequency_select,<span class="string">'Value'</span>);
+
+            child_handles = flipud(allchild(handles.bisp_amp_axis));
+            <span class="keyword">for</span> i = 1:size(frequency_selected,2)
+                temp = list{frequency_selected(i),1};
+                temp = temp(1:end-4);
+                idx = find(ismember(handles.freq_plot_list,temp));
+                <span class="keyword">if</span>(strcmp(get(child_handles(2*idx-1),<span class="string">'Type'</span>),<span class="string">'line'</span>))
+                    set(child_handles(2*idx-1),<span class="string">'LineWidth'</span>,1);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+            child_handles = flipud(allchild(handles.bisp_phase_axis));
+            <span class="keyword">for</span> i = 1:size(frequency_selected,2)
+                temp = list{frequency_selected(i),1};
+                temp = temp(1:end-4);
+                idx = find(ismember(handles.freq_plot_list,temp));
+                <span class="keyword">if</span>(strcmp(get(child_handles(2*idx-1),<span class="string">'Type'</span>),<span class="string">'line'</span>))
+                    set(child_handles(2*idx-1),<span class="string">'LineWidth'</span>,1);
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">function</span> frequency_select_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+
+<span class="keyword">if</span> display_selection&lt;=2 || display_selection&gt;=7
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+
+frequency_list = get(handles.frequency_select,<span class="string">'String'</span>);
+frequency_selected = get(handles.frequency_select,<span class="string">'Value'</span>);
+
+<span class="comment">%Clearing unchosen points</span>
+child_handles = allchild(handles.bisp);
+<span class="keyword">for</span> i = 1:size(child_handles,1)
+    <span class="keyword">if</span>(strcmp(get(child_handles(i),<span class="string">'Type'</span>),<span class="string">'line'</span>))
+        xdat = get(child_handles(i),<span class="string">'XData'</span>);
+        mark = get(child_handles(i),<span class="string">'Marker'</span>);
+        <span class="keyword">if</span>(length(xdat) == 1 &amp;&amp; strcmp(mark,<span class="string">'*'</span>))
+            delete(child_handles(i));
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="comment">%Plotting chosen points</span>
+hold(handles.bisp,<span class="string">'on'</span>);
+<span class="keyword">for</span> i = 1:size(frequency_selected,2)
+    temp = cell2mat(frequency_list(frequency_selected(i),1));
+    temp = temp(1:end-4);
+    fl = csv_to_mvar(temp);
+    plot(handles.bisp, fl(1), fl(2), <span class="string">'*r'</span>)
+<span class="keyword">end</span>
+
+
+
+<span class="keyword">function</span> freq_2_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+<span class="keyword">if</span> display_selection&lt;=2 || display_selection&gt;=7
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+x = str2double(get(handles.freq_1,<span class="string">'String'</span>));
+y = str2double(get(handles.freq_2,<span class="string">'String'</span>));
+child_handles = allchild(handles.bisp);
+<span class="keyword">for</span> i = 1:size(child_handles,1)
+    <span class="keyword">if</span>(strcmp(get(child_handles(i),<span class="string">'Type'</span>),<span class="string">'line'</span>))
+        xdat = get(child_handles(i),<span class="string">'XData'</span>);
+        mark = get(child_handles(i),<span class="string">'Marker'</span>);
+        <span class="keyword">if</span>(length(xdat) == 1 &amp;&amp; strcmp(mark,<span class="string">'*'</span>))
+            delete(child_handles(i))
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+hold(handles.bisp,<span class="string">'on'</span>);
+plot(handles.bisp, x, y, <span class="string">'r*'</span>)
+
+<span class="keyword">function</span> freq_1_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+<span class="keyword">if</span> display_selection&lt;=2 || display_selection&gt;=7
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+x = str2double(get(handles.freq_1,<span class="string">'String'</span>));
+y = str2double(get(handles.freq_2,<span class="string">'String'</span>));
+child_handles = allchild(handles.bisp);
+<span class="keyword">for</span> i = 1:size(child_handles,1)
+    <span class="keyword">if</span>(strcmp(get(child_handles(i),<span class="string">'Type'</span>),<span class="string">'line'</span>))
+        xdat = get(child_handles(i),<span class="string">'XData'</span>);
+        mark = get(child_handles(i),<span class="string">'Marker'</span>);
+        <span class="keyword">if</span>(length(xdat) == 1 &amp;&amp; strcmp(mark,<span class="string">'*'</span>))
+            delete(child_handles(i))
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+hold(handles.bisp,<span class="string">'on'</span>);
+plot(handles.bisp, x, y, <span class="string">'r*'</span>)
+
+<span class="keyword">function</span> mark_freq_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+<span class="keyword">if</span> display_selection&lt;=2 || display_selection&gt;=7
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+[x, y] = ginput(1);
+child_handles = allchild(handles.bisp);
+<span class="keyword">for</span> i = 1:size(child_handles,1)
+    <span class="keyword">if</span>(strcmp(get(child_handles(i),<span class="string">'Type'</span>),<span class="string">'line'</span>))
+        xdat = get(child_handles(i),<span class="string">'XData'</span>);
+        mark = get(child_handles(i),<span class="string">'Marker'</span>);
+        <span class="keyword">if</span>(length(xdat) == 1 &amp;&amp; strcmp(mark,<span class="string">'*'</span>))
+            delete(child_handles(i))
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+hold(handles.bisp,<span class="string">'on'</span>);
+plot(handles.bisp, x, y, <span class="string">'r*'</span>)
+set(handles.freq_1,<span class="string">'String'</span>,x);
+set(handles.freq_2,<span class="string">'String'</span>,y);
+
+<span class="comment">% --------------------------------------------------------------------</span>
+<span class="keyword">function</span> file_Callback(hObject, eventdata, handles)
+<span class="comment">%Loading data</span>
+
+<span class="comment">% --------------------------------------------------------------------</span>
+<span class="keyword">function</span> csv_read_Callback(hObject, eventdata, handles)
+<span class="comment">%Read csv file</span>
+    set(handles.status,<span class="string">'String'</span>,<span class="string">'Importing Signal...'</span>);
+
+    sig = read_from_csv();
+    fs = str2double(get(handles.sampling_freq,<span class="string">'String'</span>));
+
+    data = guidata(hObject);
+    data.sig = sig;
+    time = 1:size(sig,2);
+    time = time./fs;
+    data.time_axis = time;
+    guidata(hObject,data);
+
+
+    time = 1:size(handles.sig,2);
+    time = time./fs;
+    handles.time_axis = time;
+    plot(handles.time_series_1, time, handles.sig(1,:));<span class="comment">%Plotting the time_series part afte calculation of appropriate limits</span>
+    xlim(handles.time_series_1,[0,size(handles.sig,2)./fs]);
+    ylabel(handles.time_series_1,<span class="string">'Signal 1'</span>);
+
+
+    plot(handles.time_series_2, time, handles.sig(2,:));<span class="comment">%Plotting the time_series part afte calculation of appropriate limits</span>
+    xlim(handles.time_series_2,[0,size( handles.sig,2)./fs]);
+    xlabel(handles.time_series_2,<span class="string">'Time (s)'</span>);
+    ylabel(handles.time_series_2,<span class="string">'Signal 2'</span>);
+    linkaxes([handles.time_series_1 handles.time_series_2],<span class="string">'x'</span>);
+
+    refresh_limits_Callback(handles.refresh_limits, eventdata, handles);<span class="comment">%updates the values in the box</span>
+
+    guidata(hObject,handles);
+    preprocess_Callback(handles.preprocess, eventdata, handles);<span class="comment">%plots the detrended curve</span>
+    guidata(hObject,handles);
+    set(handles.status,<span class="string">'String'</span>,<span class="string">'Select Data And Continue With Wavelet Transform'</span>);
+
+<span class="comment">% --------------------------------------------------------------------</span>
+<span class="keyword">function</span> mat_read_Callback(hObject, eventdata, handles)
+<span class="comment">%Read mat file</span>
+    set(handles.status,<span class="string">'String'</span>,<span class="string">'Importing Signal...'</span>);
+    handles.sig = read_from_mat();
+    handles.sig = struct2cell(handles.sig);
+    handles.sig = cell2mat(handles.sig);
+    fs = str2double(get(handles.sampling_freq,<span class="string">'String'</span>));
+
+    time = 1:size(handles.sig,2);
+    time = time./fs;
+    handles.time_axis = time;
+    plot(handles.time_series_1, time, handles.sig(1,:));<span class="comment">%Plotting the time_series part afte calculation of appropriate limits</span>
+    xlim(handles.time_series_1,[0,size(handles.sig,2)./fs]);
+    ylabel(handles.time_series_1,<span class="string">'Signal 1'</span>);
+
+
+    plot(handles.time_series_2, time, handles.sig(2,:));<span class="comment">%Plotting the time_series part afte calculation of appropriate limits</span>
+    xlim(handles.time_series_2,[0,size( handles.sig,2)./fs]);
+    xlabel(handles.time_series_2,<span class="string">'Time (s)'</span>);
+    ylabel(handles.time_series_2,<span class="string">'Signal 2'</span>);
+    linkaxes([handles.time_series_1 handles.time_series_2],<span class="string">'x'</span>);
+
+    refresh_limits_Callback(handles.refresh_limits, eventdata, handles);<span class="comment">%updates the values in the box</span>
+
+    guidata(hObject,handles);
+    preprocess_Callback(handles.preprocess, eventdata, handles);<span class="comment">%plots the detrended curve</span>
+    guidata(hObject,handles);
+    set(handles.status,<span class="string">'String'</span>,<span class="string">'Select Data And Continue With Wavelet Transform'</span>);
+
+<span class="comment">%---------------------------Limits-----------------------------</span>
+<span class="keyword">function</span> xlim_Callback(hObject, eventdata, handles)
+<span class="comment">%When the values of xlim are changed the graphs are updated</span>
+    xl = csv_to_mvar(get(handles.xlim,<span class="string">'String'</span>));
+    xlim(handles.time_series_1,xl);
+    xlim(handles.time_series_2,xl);
+    xlim(handles.plot_pp,xl);
+    t = xl(2) - xl(1);
+    set(handles.length,<span class="string">'String'</span>,t);
+
+<span class="keyword">function</span> ylim_Callback(hObject, eventdata, handles)
+<span class="comment">%When the values of ylim are changed the graphs are updated</span>
+    yl = csv_to_mvar(get(handles.ylim,<span class="string">'String'</span>));
+    ylim(handles.time_series_1,yl);
+    ylim(handles.time_series_2,yl);
+
+
+<span class="comment">%---------------------------Updating Value of limits Limits-----------------------------</span>
+<span class="keyword">function</span> refresh_limits_Callback(hObject, eventdata, handles)
+<span class="comment">%Calcualtes limits of the plot</span>
+
+    x = get(handles.time_series_1,<span class="string">'xlim'</span>);
+    xlim(handles.plot_pp,x);
+    t = x(2) - x(1);
+    x = strcat(num2str(x(1)),<span class="string">' , '</span>,num2str(x(2)));
+
+    y = get(handles.time_series_1,<span class="string">'ylim'</span>);
+    y = strcat(num2str(y(1)),<span class="string">' , '</span>,num2str(y(2)));
+
+    set(handles.xlim,<span class="string">'String'</span>,x);
+    set(handles.ylim,<span class="string">'String'</span>,y);
+    set(handles.length,<span class="string">'String'</span>,t);
+
+<span class="comment">% ---------------------------Zoom Updating--------------------------</span>
+<span class="keyword">function</span> zoom_in_OffCallback(hObject, eventdata, handles)
+<span class="comment">%Refreshes the limit values right after the tool is deselected</span>
+    x = get(handles.time_series_1,<span class="string">'xlim'</span>);
+    xlim(handles.plot_pp,x);
+    t = x(2) - x(1);
+    x = strcat(num2str(x(1)),<span class="string">' , '</span>,num2str(x(2)));
+
+    y = get(handles.time_series_1,<span class="string">'ylim'</span>);
+    y = strcat(num2str(y(1)),<span class="string">' , '</span>,num2str(y(2)));
+
+    set(handles.xlim,<span class="string">'String'</span>,x);
+    set(handles.ylim,<span class="string">'String'</span>,y);
+    set(handles.length,<span class="string">'String'</span>,t);
+
+<span class="comment">% -----------------------------Zoom Updating--------------------------</span>
+<span class="keyword">function</span> zoom_out_OffCallback(hObject, eventdata, handles)
+<span class="comment">%Refreshes the limit values right after the tool is deselected</span>
+    x = get(handles.time_series_1,<span class="string">'xlim'</span>);
+    xlim(handles.plot_pp,x);
+    t = x(2) - x(1);
+    x = strcat(num2str(x(1)),<span class="string">' , '</span>,num2str(x(2)));
+
+    y = get(handles.time_series_1,<span class="string">'ylim'</span>);
+    y = strcat(num2str(y(1)),<span class="string">' , '</span>,num2str(y(2)));
+
+    set(handles.xlim,<span class="string">'String'</span>,x);
+    set(handles.ylim,<span class="string">'String'</span>,y);
+    set(handles.length,<span class="string">'String'</span>,t);
+
+<span class="keyword">function</span> plot_type_SelectionChangeFcn(hObject, eventdata, handles)
+<span class="comment">%deciding which plot</span>
+    <span class="keyword">switch</span> get(eventdata.NewValue,<span class="string">'Tag'</span>) <span class="comment">% Get Tag of selected object.</span>
+        <span class="keyword">case</span> <span class="string">'power'</span>
+            plot_type = 1;
+        <span class="keyword">case</span> <span class="string">'amp'</span>
+            plot_type = 2;
+    <span class="keyword">end</span>
+
+    handles.plot_type = plot_type;
+    guidata(hObject,handles);
+    display_selection = get(handles.display_type,<span class="string">'Value'</span>);
+    <span class="keyword">if</span> display_selection&lt;=2 || display_selection&gt;=7
+        display_type_Callback(handles.display_type, eventdata, handles)
+        guidata(hObject,handles);
+    <span class="keyword">end</span>
+
+
+<span class="comment">% ----------------------------------------Saving Files---------------</span>
+<span class="keyword">function</span> save_Callback(hObject, eventdata, handles)
+<span class="comment">%Honestly you're just here because I don't know how to get rid of you</span>
+
+<span class="keyword">function</span> save_3dplot_Callback(hObject, eventdata, handles)
+<span class="comment">%Saves the 3d plot</span>
+    Fig = figure;
+    copyobj(handles.plot3d, Fig);
+    Fig = tightfig(Fig);
+
+<span class="keyword">function</span> save_power_plot_Callback(hObject, eventdata, handles)
+<span class="comment">%Saves the power plot</span>
+    Fig = figure;
+    copyobj(handles.plot_pow, Fig);
+    Fig = tightfig(Fig);
+
+<span class="keyword">function</span> save_pow_arr_Callback(hObject, eventdata, handles)
+<span class="comment">%Saves the avg power array</span>
+    [FileName,PathName] = uiputfile
+    save_location = strcat(PathName,FileName)
+    data = guidata(hObject);
+    pow_arr = data.pow_arr;
+    save(save_location,<span class="string">'pow_arr'</span>);
+
+<span class="keyword">function</span> save_wt_Callback(hObject, eventdata, handles)
+<span class="comment">%Saves the wavelet transform</span>
+    [FileName,PathName] = uiputfile
+    save_location = strcat(PathName,FileName)
+    WT = handles.WT;
+    freqarr = handles.freqarr;
+    save(save_location,<span class="string">'freqarr'</span>,<span class="string">'-v7.3'</span>);
+    save(save_location,<span class="string">'WT'</span>,<span class="string">'-v7.3'</span>);<span class="comment">%Sometimes the compression is faulty</span>
+
+<span class="keyword">function</span> detrend_signal_popup_Callback(hObject, eventdata, handles)
+<span class="comment">%Detrends the signal plots the chosen one</span>
+    cla(handles.plot_pp,<span class="string">'reset'</span>);
+    set(handles.plot_pp,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>);
+    preprocess_Callback(handles.preprocess, eventdata, handles);
+</pre><img vspace="5" hspace="5" src="Bispectrum_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%Version 1.00 
+%**************************************************************************
+%***************************** Bispectrum GUI ******************************
+%**************************************************************************
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-CreditsREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%Wavelet Transform: Dmytro Iatsenko
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHDocumentationREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+%Comnig Soon
+
+
+
+function varargout = Bispectrum(varargin)
+% BISPECTRUM MATLAB code for Bispectrum.fig
+%      BISPECTRUM, by itself, creates a new BISPECTRUM or raises the existing
+%      singleton*.
+%
+%      H = BISPECTRUM returns the handle to a new BISPECTRUM or the handle to
+%      the existing singleton*.
+%
+%      BISPECTRUM('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in BISPECTRUM.M with the given input arguments.
+%
+%      BISPECTRUM('Property','Value',...) creates a new BISPECTRUM or raises the
+%      existing singleton*.  Starting from the left, property value pairs are
+%      applied to the GUI before Bispectrum_OpeningFcn gets called.  An
+%      unrecognized property name or invalid value makes property application
+%      stop.  All inputs are passed to Bispectrum_OpeningFcn via varargin.
+%
+%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
+%      instance to run (singleton)".
+%
+% See also: GUIDE, GUIDATA, GUIHANDLES
+
+
+% Edit the above text to modify the response to help Bispectrum
+
+% Last Modified by GUIDE v2.5 30-Jun-2017 17:38:59
+%*************************************************************************%
+%                BEGIN initialization code - DO NOT EDIT                  %
+%                REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH                 %
+%*************************************************************************%
+gui_Singleton = 1;
+gui_State = struct('gui_Name',       mfilename, ...
+                   'gui_Singleton',  gui_Singleton, ...
+                   'gui_OpeningFcn', @Bispectrum_OpeningFcn, ...
+                   'gui_OutputFcn',  @Bispectrum_OutputFcn, ...
+                   'gui_LayoutFcn',  [] , ...
+                   'gui_Callback',   []);
+if nargin && ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+end
+
+if nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+else
+    gui_mainfcn(gui_State, varargin{:});
+end
+%*************************************************************************%
+%                END initialization code - DO NOT EDIT                    %
+%*************************************************************************%
+
+
+function Bispectrum_OpeningFcn(hObject, eventdata, handles, varargin)
+movegui('center') 
+axes(handles.logo)
+matlabImage = imread('physicslogo.png');
+image(matlabImage)
+axis off
+axis image
+h = findall(0,'Type','uicontrol');
+set(h,'FontUnits','normalized');
+%set(gcbo,'DefaultAxesFontUnits','normalized')
+handles.output = hObject;
+guidata(hObject, handles);
+
+function varargout = Bispectrum_OutputFcn(hObject, eventdata, handles) 
+varargout{1} = handles.output;
+function plot_type_CreateFcn(hObject, eventdata, handles)
+function wavlet_transform_CreateFcn(hObject, eventdata, handles)
+function signal_name_Callback(hObject, eventdata, handles)
+function signal_name_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function orientation_Callback(hObject, eventdata, handles)
+function orientation_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function sampling_freq_Callback(hObject, eventdata, handles)
+function sampling_freq_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function max_freq_Callback(hObject, eventdata, handles)
+function status_Callback(hObject, eventdata, handles)
+function status_CreateFcn(hObject, eventdata, handles)
+set(hObject,'String','Please Import Signal');
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function max_freq_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function min_freq_Callback(hObject, eventdata, handles)
+function min_freq_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function wavelet_type_Callback(hObject, eventdata, handles)
+function wavelet_type_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function central_freq_Callback(hObject, eventdata, handles)
+function central_freq_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function preprocess_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function cutedges_Callback(hObject, eventdata, handles)
+function cutedges_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function sampling_rate_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function length_Callback(hObject, eventdata, handles)
+function length_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function intervals_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function xlim_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function ylim_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function detrend_signal_popup_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function display_type_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function surrogate_percentile_Callback(hObject, eventdata, handles)
+set(hObject,'Enable','off');
+function surrogate_percentile_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function sampling_rate_Callback(hObject, eventdata, handles)
+function bisp_ord_Callback(hObject, eventdata, handles)
+function bisp_ord_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function freq_1_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function freq_2_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function frequency_select_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHUnused CallbacksREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+
+function intervals_Callback(hObject, eventdata, handles)
+%Marking lines on the graphs    
+    intervals = csv_to_mvar(get(handles.intervals,'String'));    
+    display_selected = get(handles.display_type,'Value');
+    if(size(intervals)>0)
+        zval = 1;
+        child_handles = allchild(handles.wt_pane);
+        if(display_selected == 1 || display_selected == 2)
+            for i = 1:size(child_handles,1)
+                if(strcmp(get(child_handles(i),'Type'),'axes'))
+                    set(child_handles(i),'Ytick',intervals);
+                    hold(child_handles(i),'on');
+                    warning('off');
+
+                        for j = 1:size(intervals,2)
+                            xl = get(child_handles(i),'xlim');
+                            x = [xl(1) xl(2)];        
+                            z = ones(1,size(x,2));
+                            z = z.*zval;
+                            y = intervals(j)*ones(1,size(x,2));
+                            plot3(child_handles(i),x,y,z,'REPLACE_WITH_DASH_DASHk');
+                        end
+                    
+                    warning('on');
+                    hold(child_handles(i),'off');
+                end
+            end
+        elseif display_selected >=3 
+            for j = 1:size(intervals,2)
+                yl = get(handles.bisp_amp_axis,'ylim');
+                y = [yl(1) yl(2)];        
+                x = intervals(j)*ones(1,size(y,2));
+                plot(handles.bisp_amp_axis,x,y,'REPLACE_WITH_DASH_DASHk')
+                yl = get(handles.bisp_phase_axis,'ylim');
+                y = [yl(1) yl(2)];        
+                x = intervals(j)*ones(1,size(y,2));
+                plot(handles.bisp_phase_axis,x,y,'REPLACE_WITH_DASH_DASHk')
+            end    
+        end
+    end
+    
+    
+function preprocess_Callback(hObject, eventdata, handles)
+%Detrending Part Visualisation
+    data = guidata(hObject);
+    sig = data.sig; 
+    time_axis = data.time_axis;
+    L = size(sig,2);
+    fs = str2double(get(handles.sampling_freq,'String'));
+    fmax = str2double(get(handles.max_freq,'String'));
+    fmin = str2double(get(handles.min_freq,'String'));
+    
+    contents = cellstr(get(handles.detrend_signal_popup,'String'));
+    i = contents{get(handles.detrend_signal_popup,'Value')};
+    i = str2double(i);
+    
+    %Detrending
+    cur_sig = sig(i,:);
+    cur_sig = cur_sig(:);
+    X=(1:length(cur_sig))'/fs; XM=ones(length(X),4); 
+
+    for pn=1:3 
+        CX=X.^pn; 
+        XM(:,pn+1)=(CX-mean(CX))/std(CX); 
+    end
+
+    w=warning('off','all'); 
+    new_signal=cur_sig-XM*(pinv(XM)*cur_sig); 
+    warning(w);
+
+    %Filtering
+    fx=fft(new_signal,L); % Fourier transform of a signal
+
+    Nq=ceil((L+1)/2); 
+    ff=[(0:Nq-1),-fliplr(1:L-Nq)]*fs/L; 
+    ff=ff(:); % frequencies in Fourier transform
+
+    fx(abs(ff)<=max([fmin,fs/L]) | abs(ff)>=fmax)=0; % filter signal in a chosen frequency domain
+    new_signal=ifft(fx);
+    %Plotting
+    
+    plot(handles.plot_pp,time_axis,cur_sig);
+    hold(handles.plot_pp,'on');
+    plot(handles.plot_pp,time_axis,new_signal,'-r');
+    set(handles.plot_pp,'fontunits','normalized');
+    
+    %legend(handles.plot_pp,'Original','Pre-Processed','Location','Best');
+    xlim(handles.plot_pp,[0,size(sig,2)./fs]);
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-    
+
+function wavlet_transform_Callback(hObject, eventdata, handles)
+%Does the wavelet transform 
+% Get user input from GUI
+    
+    set(handles.status,'String','Calculating Wavelet Transform...');
+    fs = str2double(get(handles.sampling_freq,'String'));
+    fmax = str2double(get(handles.max_freq,'String'));
+    fmin = str2double(get(handles.min_freq,'String'));
+    fc =  str2double(get(handles.central_freq,'String'));
+    ord = str2double(get(handles.bisp_ord,'String'));
+    wavelet_type_selected = 'Morlet';
+    
+    items = get(handles.preprocess,'String');
+    index_selected = get(handles.preprocess,'Value');
+    preprocess_selected = items{index_selected};
+    
+    items = get(handles.cutedges,'String');
+    index_selected = get(handles.cutedges,'Value');
+    cutedges_selected = items{index_selected};
+    
+    sig = handles.sig;    
+    
+    n = size(sig,1) ;
+    handles.WT = cell(n, 1);
+    
+    if isnan(ord)
+      errordlg('Order must be specified','Parameter Error');
+      return
+    end
+    
+%Taking only selected part of the signal
+    xl = get(handles.xlim,'String');
+    xl = csv_to_mvar(xl);
+    xl = xl.*fs;
+    xl(2) = min(xl(2),size(sig,2));
+    xl(1) = max(xl(1),1);
+    sig = sig(:,xl(1):xl(2));
+    xl = xl./fs;
+      
+    set(handles.status,'String','Calculating Wavelet Transform...');
+    %Calculating wavelet transform and deciding parameter form
+    if(isnan(fmax)&& isnan(fmin))
+        if(isnan(fc))
+            for p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,'CutEdges',cutedges_selected,...
+                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected); 
+            end
+        else
+            for p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,'CutEdges',cutedges_selected,...
+                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected,'f0',fc); 
+            end
+        end
+    elseif(isnan(fmax))
+        if(isnan(fc))
+            for p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,'fmin',fmin,'CutEdges',cutedges_selected,...
+                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected);
+            end
+        else
+            for p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,'fmin',fmin,'CutEdges',cutedges_selected,...
+                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected,'f0',fc);
+            end
+        end
+    elseif(isnan(fmin))
+        if(isnan(fc))
+            for p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,'fmax',fmax,'CutEdges',cutedges_selected,...
+                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected);
+            end
+        else
+            for p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,'fmax',fmax,'CutEdges',cutedges_selected,...
+                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected,'f0',fc);
+            end
+        end
+    else
+        if(isnan(fc))
+            for p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,'fmin',fmin,'fmax',fmax,'CutEdges',cutedges_selected,...
+                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected);
+            end
+        else
+            for p = 1:n
+            [handles.WT{p,1},handles.freqarr]=wt(sig(p,:),fs,'fmin',fmin,'fmax',fmax,'CutEdges',cutedges_selected,...
+                'Preprocess',preprocess_selected,'Wavelet',wavelet_type_selected,'f0',fc);
+            end
+        end
+    end
+    
+    %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+    
+    handles.amp_WT = cell(n,1);
+    handles.pow_WT = cell(n,1);
+    handles.pow_arr = cell(n,1);
+    handles.amp_arr = cell(n,1);
+    
+    %write the averaging function and the max function
+    
+    for p = 1:n
+        handles.amp_WT{p,1} = abs(handles.WT{p,1});   
+        handles.pow_WT{p,1} = abs(handles.WT{p,1}).^2;
+        handles.pow_arr{p,1} = nanmean(handles.pow_WT{p,1}.');%Calculating Average Power
+        handles.amp_arr{p,1} = nanmean(handles.amp_WT{p,1}.');%Calculating Average Amplitude  
+    end
+    
+    %Calculating the Bispectrum
+    [handles.bxxx, handles.bppp, handles.bpxx, handles.bxpp] = bispectrum(sig(1,:), sig(2,:),...
+        handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, .01, ord, fs, fc);
+    
+    handles.sig_cut = sig;
+    
+    guidata(hObject,handles);    
+    display_type_Callback(handles.display_type, eventdata, handles);
+    guidata(hObject,handles);
+    
+    set(handles.display_type,'Enable','on');
+    set(handles.intervals,'Enable','on');
+  
+function display_type_Callback(hObject, eventdata, handles)
+set(handles.freq_1,'String','');
+set(handles.freq_2,'String','');
+display_selection = get(handles.display_type,'Value');
+
+set(handles.status,'String','Plotting Data');
+
+sig = handles.sig;
+fs = str2double(get(handles.sampling_freq,'String'));
+
+xl = csv_to_mvar(get(handles.xlim,'String'));
+xl = xl.*fs;
+xl(2) = min(xl(2),size(sig,2));
+xl(1) = max(xl(1),1);
+xl = xl./fs;
+time_axis = xl(1):1/fs:xl(2);
+
+if length(time_axis)>=2000
+    screensize = max(get(groot,'Screensize'));
+    n = floor(size(sig,2)/screensize);%TODO improve reliability with screens
+else 
+    n = 1;
+end
+
+if (display_selection == 1 || display_selection == 2) && isfield(handles,'WT')
+    
+    clear_pane_axes(handles.wt_pane);
+    %Deciding the plot type
+        
+        %Actual Plotting    
+        %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-Surf PlotREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+        
+        position = [0.06 0.122 0.6 0.849];
+        handles.plot3d = subplot(1,3,[1 2],'Parent',handles.wt_pane,'position',position);
+        position = [.78 .122 .196 .849];
+        handles.plot_pow = subplot(1,3,3,'Parent',handles.wt_pane,'position',position);
+        
+        if(handles.plot_type == 1)           
+            handles.peak_value = max(handles.pow_WT{display_selection,1}(:))+.1;
+            pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{display_selection,1}(1:end,1:n:end)); 
+            zlabel(handles.plot3d,'Power');
+            plot(handles.plot_pow ,handles.pow_arr{display_selection,1}, handles.freqarr,'-k','LineWidth',3 );
+        else            
+            handles.peak_value = max(handles.amp_WT{display_selection,1}(:))+.1;
+            pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{display_selection,1}(1:end,1:n:end)); 
+            zlabel(handles.plot3d,'Amplitude');
+            plot(handles.plot_pow ,handles.amp_arr{display_selection,1}, handles.freqarr,'-k','LineWidth',3 );
+        end 
+        
+        shading(handles.plot3d,'interp');        
+        set(handles.plot3d,'yscale','log');
+        set(handles.plot3d,'ylim',[min(handles.freqarr) max(handles.freqarr)]);%making the axes tight
+        set(handles.plot3d,'xlim',[time_axis(1) time_axis(end)]);%making the axes tight
+        xlabel(handles.plot3d,'Time (s)');
+        ylabel(handles.plot3d,'Frequency (Hz)');
+        c = colorbar(handles.plot3d,'Location','east');
+        set(c, 'position',[0.675 .12 .015 .85],'Linewidth',0.2);
+        set(c, 'fontsize',8,'units','normalized');
+        
+        %REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHPower PlotREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH      
+                        
+        set(handles.plot_pow,'yscale','log');        
+        ylim(handles.plot_pow,[min(handles.freqarr) max(handles.freqarr)]);
+        set(handles.status,'String','Done Plotting');
+        if(handles.plot_type == 1)       
+            xlabel(handles.plot_pow,'Average Power');
+        else   
+            xlabel(handles.plot_pow,'Average Amplitude');
+        end
+        ylabel(handles.plot_pow,'Frequency (Hz)');
+        guidata(hObject,handles);
+        %set(handles.plot3d,'fontunits','normalized');
+elseif display_selection == 3 || display_selection == 4 || display_selection == 5 || display_selection == 6
+     %Plotting bispectrum   
+        clear_pane_axes(handles.wt_pane);    
+        position = [0.06 0.12 0.432 0.8];
+        handles.bisp = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');            
+        position = [.56 .55 .42 .42];
+        handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');
+        position = [.56 .09 .42 .42];
+        handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');
+        if display_selection == 3
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxxx) 
+        elseif display_selection == 4
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bppp)
+        elseif display_selection == 5
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxpp)
+        elseif display_selection == 6
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bpxx)
+        end
+        set(handles.bisp, 'yscale','log','xscale','log');
+        grid(handles.bisp,'on');
+        idx_first = find(sum(~isnan(handles.bxxx),1) > 0, 1 ,'first');
+        idx_last = find(sum(~isnan(handles.bxxx),1) > 0, 1 , 'last');      
+        xlim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
+        ylim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);               
+        xlabel(handles.bisp,'Frequency (Hz)');
+        ylabel(handles.bisp,'Frequency (Hz)');
+        shading(handles.bisp,'interp');
+        set(handles.bisp,'fontunits','normalized','fontsize',0.03);
+        title(handles.bisp,'Bispectrum','fontsize',14,'fontweight','normal');
+        
+        
+        guidata(hObject,handles);
+        
+elseif display_selection == 7 && isfield(handles,'WT')
+    %Plotting all plots
+        clear_pane_axes(handles.wt_pane);    
+        position = [.08 .58 .22 .40];
+        handles.bispxxx = axes('Parent',handles.wt_pane,'position',position);
+        position = [.35 .58 .22 .40];
+        handles.bispxpp = axes('Parent',handles.wt_pane,'position',position);
+        position = [.08 .12 .22 .40];
+        handles.bisppxx = axes('Parent',handles.wt_pane,'position',position);
+        position = [.35 .12 .22 .40];
+        handles.bispppp = axes('Parent',handles.wt_pane,'position',position);
+        
+        position = [.64 .58 .34 .40];
+        handles.wt_1 = axes('Parent',handles.wt_pane,'position',position);        
+        position = [.64 .12 .34 .40];
+        handles.wt_2 = axes('Parent',handles.wt_pane,'position',position);
+        
+        pcolor(handles.bispxxx, handles.freqarr, handles.freqarr, handles.bxxx)
+        pcolor(handles.bispppp, handles.freqarr, handles.freqarr, handles.bppp)
+        pcolor(handles.bisppxx, handles.freqarr, handles.freqarr, handles.bpxx)
+        pcolor(handles.bispxpp, handles.freqarr, handles.freqarr, handles.bxpp)
+        
+        if(handles.plot_type == 1)           
+            pcolor(handles.wt_1, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{1,1}(1:end,1:n:end));
+            pcolor(handles.wt_2, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{2,1}(1:end,1:n:end));
+        else            
+            pcolor(handles.wt_1, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{1,1}(1:end,1:n:end)); 
+            pcolor(handles.wt_2, time_axis(1:n:end) ,handles.freqarr, handles.amp_WT{2,1}(1:end,1:n:end)); 
+        end 
+        
+        shading(handles.wt_1,'interp');     
+        shading(handles.wt_2,'interp');  
+        ylabel(handles.wt_1,'Frequency (Hz)');
+        xlabel(handles.wt_2,'Time (s)');
+        ylabel(handles.wt_2,'Frequency (Hz)');
+        
+        idx_first = find(sum(~isnan(handles.bxxx),1) > 0, 1 ,'first');
+        idx_last = find(sum(~isnan(handles.bxxx),1) > 0, 1 , 'last');      
+        
+        child_handles = allchild(handles.wt_pane);
+        for i = 4:size(child_handles,1)
+            if(strcmp(get(child_handles(i),'Type'),'axes'))    
+                shading(child_handles(i),'interp');
+                set(child_handles(i),'yscale','log');
+                set(child_handles(i),'xscale','log');
+                xlim(child_handles(i),[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
+                ylim(child_handles(i),[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
+            end
+        end   
+        set(handles.wt_1,'yscale','log','ylim',[handles.freqarr(idx_first) handles.freqarr(idx_last)], 'xlim',[time_axis(1) time_axis(end)],...
+        'zdir','reverse');
+        set(handles.wt_2,'yscale','log','ylim',[handles.freqarr(idx_first) handles.freqarr(idx_last)], 'xlim',[time_axis(1) time_axis(end)],...
+        'zdir','reverse');
+        ylabel(handles.bispxxx,'Frequency(Hz)');
+        ylabel(handles.bisppxx,'Frequency(Hz)');
+        xlabel(handles.bisppxx,'Frequency(Hz)');
+        xlabel(handles.bispppp,'Frequency(Hz)');
+        guidata(hObject,handles);
+else 
+    error('Calculate Before Plotting');
+end
+
+
+
+function calculate_bisp_Callback(hObject, eventdata, handles)
+%Plotting the Biphase and Biamp
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
+display_selection = get(handles.display_type,'Value');
+    if(display_selection>=3 && display_selection<=6) 
+        hold(handles.bisp_amp_axis,'on');
+        hold(handles.bisp_phase_axis,'on');
+        f1 = str2double(get(handles.freq_1,'String'));
+        f2 = str2double(get(handles.freq_2,'String'));
+        fs = str2double(get(handles.sampling_freq,'String'));
+        fc =  str2double(get(handles.central_freq,'String'));
+        xl = csv_to_mvar(get(handles.xlim,'String'));
+        xl = xl.*fs;
+        xl(2) = min(xl(2),size(handles.sig,2));
+        xl(1) = max(xl(1),1);
+        xl = xl./fs;
+        time_axis = xl(1):1/fs:xl(2);
+        list = get(handles.frequency_select,'String');
+        if isempty(list)
+            list = cell(1,1);
+            list{1,1} = sprintf('%f,%f | on',f1,f2);       
+        else
+            list{size(list,1)+1,1} = sprintf('%f,%f | on',f1,f2);
+        end       
+        sz = size(list,1);
+        set(handles.frequency_select,'String',list,'Max',sz,'Value',1);
+        %Verify Calculation from Ola
+        if display_selection == 3
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{1,1}, handles.WT{1,1}, handles.freqarr, f1, f2, fs, fc);
+        elseif display_selection == 4
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(2,:), handles.WT{2,1}, handles.WT{2,1}, handles.freqarr, f1, f2, fs, fc);
+        elseif display_selection == 5
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(2,:), handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, f1, f2, fs, fc);
+        elseif display_selection == 6
+            [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{2,1}, handles.WT{1,1}, handles.freqarr, f1, f2, fs, fc);
+        end
+        
+        plot(handles.bisp_amp_axis, time_axis, handles.biamp);
+        grid(handles.bisp_amp_axis,'on');
+        plot(handles.bisp_phase_axis, time_axis, handles.biphase); 
+        grid(handles.bisp_phase_axis,'on');
+        
+        [M,I] = max(handles.biamp);
+        text(handles.bisp_amp_axis,time_axis(I),M,num2str(size(list,1)));  
+        [M,I] = max(handles.biphase);
+        text(handles.bisp_phase_axis,time_axis(I),M,num2str(size(list,1)));  
+        
+        set(handles.bisp_amp_axis,'xticklabel',[]);
+        ylabel(handles.bisp_amp_axis,'Biamplitdue');
+        ylabel(handles.bisp_phase_axis,'Biphase');
+        xlabel(handles.bisp_phase_axis,'Time (s)');        
+        guidata(hObject, handles);
+        %Marking the point 
+        child_handles = allchild(handles.bisp);
+        for i = 1:size(child_handles,1)    
+            if(strcmp(get(child_handles(i),'Type'),'line'))
+                xdat = get(child_handles(i),'XData');
+                mark = get(child_handles(i),'Marker');
+                if(length(xdat) == 1 && strcmp(mark,'*'))
+                    set(child_handles(i),'Marker','o','MarkerEdgeColor','r');
+                end
+            end
+        end
+        plot(handles.bisp,f1,f2,'or');
+        
+    end
+
+function bisp_clear_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
+
+list = get(handles.frequency_select,'String');
+if ~isempty(list)
+    for i = 1:length(list)
+        temp = list{i,1};
+        temp(end-2:end) = ['o','f','f'];
+        list{i,1} = temp;
+    end
+    sz = size(list,1);
+    set(handles.frequency_select,'String',list,'Max',sz,'Value',1);
+end
+
+cla(handles.bisp_amp_axis,'reset');
+cla(handles.bisp_phase_axis,'reset');
+set(handles.bisp_amp_axis,'fontunits','normalized');
+set(handles.bisp_phase_axis,'fontunits','normalized');
+clear_axes_points(handles.bisp);
+
+% REPLACE_WITH_DASH_DASH- Executes on key press with focus on frequency_select and none of its controls.
+function frequency_select_KeyPressFcn(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
+switch eventdata.Key
+    
+    case 'delete'
+        frequency_selected = get(handles.frequency_select,'Value');
+        if min(frequency_selected)>1
+            set(handles.frequency_select,'Value',min(frequency_selected)-1);
+        else
+            set(handles.frequency_select,'Value',1);
+        end
+        list = get(handles.frequency_select,'String');
+        list(frequency_selected,:) = [];
+        set(handles.frequency_select,'String',list);        
+        drawnow;
+        
+    case 'return'
+        fs = str2double(get(handles.sampling_freq,'String'));
+        fc =  str2double(get(handles.central_freq,'String'));
+        display_selection = get(handles.display_type,'Value');
+        frequency_list = get(handles.frequency_select,'String');
+        frequency_selected = get(handles.frequency_select,'Value');
+        %Change everything to off
+        if ~isempty(frequency_list)
+            for i = 1:length(frequency_list)
+                temp = frequency_list{i,1};
+                temp(end-2:end) = ['o','f','f'];
+                frequency_list{i,1} = temp;
+            end
+            sz = size(frequency_list,1);
+            set(handles.frequency_select,'String',frequency_list,'Max',sz,'Value',1);
+        end
+        
+        if isempty(frequency_selected)
+            return;
+        end
+        xl = csv_to_mvar(get(handles.xlim,'String'));
+        xl = xl.*fs;
+        xl(2) = min(xl(2),size(handles.sig,2));
+        xl(1) = max(xl(1),1);
+        xl = xl./fs;
+        time_axis = xl(1):1/fs:xl(2);
+        
+        cla(handles.bisp_amp_axis);
+        cla(handles.bisp_phase_axis);
+        clear_axes_points(handles.bisp);
+        hold(handles.bisp_phase_axis,'on');
+        hold(handles.bisp_amp_axis,'on');
+        hold(handles.bisp,'on');
+        handles.freq_plot_list = cell(size(frequency_selected,2),1);
+        for i = 1:size(frequency_selected,2)
+            temp = cell2mat(frequency_list(frequency_selected(i),1));
+            temp(end-2:end) = [' ','o','n'];
+            frequency_list{frequency_selected(i),1} = temp;
+            temp = temp(1:end-4);
+            handles.freq_plot_list{i,1} = temp; 
+            fl = csv_to_mvar(temp);              
+            
+            if display_selection == 3
+                [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{1,1}, handles.WT{1,1}, handles.freqarr, fl(1), fl(2), fs, fc);
+            elseif display_selection == 4
+                [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(2,:), handles.WT{2,1}, handles.WT{2,1}, handles.freqarr, fl(1), fl(2), fs, fc);
+            elseif display_selection == 5
+                [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(2,:), handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, fl(1), fl(2), fs, fc);
+            elseif display_selection == 6
+                [handles.biamp, handles.biphase] = biphaseWav(handles.sig_cut(1,:), handles.WT{2,1}, handles.WT{1,1}, handles.freqarr, fl(1), fl(2), fs, fc);
+            end
+                                   
+            plot(handles.bisp_amp_axis, time_axis, handles.biamp);
+            grid(handles.bisp_amp_axis,'on');
+            plot(handles.bisp_phase_axis, time_axis, handles.biphase); 
+            grid(handles.bisp_phase_axis,'on');
+            
+            [M,I] = max(handles.biamp);
+            text(handles.bisp_amp_axis,time_axis(I), M,num2str(frequency_selected(i)));  
+            [M,I] = max(handles.biphase);
+            text(handles.bisp_phase_axis,time_axis(I), M,num2str(frequency_selected(i)));  
+            set(handles.bisp_amp_axis,'fontunits','normalized','fontsize',0.05,'xticklabel',[]);
+            set(handles.bisp_phase_axis,'fontunits','normalized','fontsize',0.05);
+            ylabel(handles.bisp_amp_axis,'Biamplitdue');
+            ylabel(handles.bisp_phase_axis,'Biphase');
+            xlabel(handles.bisp_phase_axis,'Time (s)');  
+            plot(handles.bisp, fl(1), fl(2), 'or')      
+            
+        end  
+        sz = size(frequency_list,1);
+        set(handles.frequency_select,'String',frequency_list,'Max',sz,'Value',1);
+        guidata(hObject,handles);
+        
+        case 'h'            
+            list = get(handles.frequency_select,'String');
+            frequency_selected = get(handles.frequency_select,'Value');
+               
+            child_handles = flipud(allchild(handles.bisp_amp_axis));  
+            for i = 1:size(frequency_selected,2)
+                temp = list{frequency_selected(i),1};
+                temp = temp(1:end-4);
+                idx = find(ismember(handles.freq_plot_list,temp));
+                if(strcmp(get(child_handles(2*idx-1),'Type'),'line'))
+                    set(child_handles(2*idx-1),'LineWidth',2);
+                end
+            end
+            
+            child_handles = flipud(allchild(handles.bisp_phase_axis));
+            for i = 1:size(frequency_selected,2)
+                temp = list{frequency_selected(i),1};
+                temp = temp(1:end-4);
+                idx = find(ismember(handles.freq_plot_list,temp));
+                if(strcmp(get(child_handles(2*idx-1),'Type'),'line'))
+                    set(child_handles(2*idx-1),'LineWidth',2);
+                end
+            end
+            
+    case 'd'
+            list = get(handles.frequency_select,'String');
+            frequency_selected = get(handles.frequency_select,'Value');
+               
+            child_handles = flipud(allchild(handles.bisp_amp_axis));  
+            for i = 1:size(frequency_selected,2)
+                temp = list{frequency_selected(i),1};
+                temp = temp(1:end-4);
+                idx = find(ismember(handles.freq_plot_list,temp));
+                if(strcmp(get(child_handles(2*idx-1),'Type'),'line'))
+                    set(child_handles(2*idx-1),'LineWidth',1);
+                end
+            end
+            
+            child_handles = flipud(allchild(handles.bisp_phase_axis));
+            for i = 1:size(frequency_selected,2)
+                temp = list{frequency_selected(i),1};
+                temp = temp(1:end-4);
+                idx = find(ismember(handles.freq_plot_list,temp));
+                if(strcmp(get(child_handles(2*idx-1),'Type'),'line'))
+                    set(child_handles(2*idx-1),'LineWidth',1);
+                end
+            end
+end
+
+function frequency_select_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+
+if display_selection<=2 || display_selection>=7
+    return;
+end
+
+frequency_list = get(handles.frequency_select,'String');
+frequency_selected = get(handles.frequency_select,'Value');
+
+%Clearing unchosen points
+child_handles = allchild(handles.bisp);
+for i = 1:size(child_handles,1)    
+    if(strcmp(get(child_handles(i),'Type'),'line'))
+        xdat = get(child_handles(i),'XData');
+        mark = get(child_handles(i),'Marker');
+        if(length(xdat) == 1 && strcmp(mark,'*'))
+            delete(child_handles(i));
+        end
+    end
+end
+%Plotting chosen points
+hold(handles.bisp,'on');
+for i = 1:size(frequency_selected,2)
+    temp = cell2mat(frequency_list(frequency_selected(i),1));
+    temp = temp(1:end-4);
+    fl = csv_to_mvar(temp);            
+    plot(handles.bisp, fl(1), fl(2), '*r')            
+end
+
+
+
+function freq_2_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
+x = str2double(get(handles.freq_1,'String'));
+y = str2double(get(handles.freq_2,'String'));
+child_handles = allchild(handles.bisp);
+for i = 1:size(child_handles,1)    
+    if(strcmp(get(child_handles(i),'Type'),'line'))
+        xdat = get(child_handles(i),'XData');
+        mark = get(child_handles(i),'Marker');
+        if(length(xdat) == 1 && strcmp(mark,'*'))
+            delete(child_handles(i))
+        end
+    end
+end
+hold(handles.bisp,'on');
+plot(handles.bisp, x, y, 'r*')
+
+function freq_1_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
+x = str2double(get(handles.freq_1,'String'));
+y = str2double(get(handles.freq_2,'String'));
+child_handles = allchild(handles.bisp);
+for i = 1:size(child_handles,1)    
+    if(strcmp(get(child_handles(i),'Type'),'line'))
+        xdat = get(child_handles(i),'XData');
+        mark = get(child_handles(i),'Marker');
+        if(length(xdat) == 1 && strcmp(mark,'*'))
+            delete(child_handles(i))
+        end
+    end
+end
+hold(handles.bisp,'on');
+plot(handles.bisp, x, y, 'r*')
+
+function mark_freq_Callback(hObject, eventdata, handles)
+display_selection = get(handles.display_type,'Value');
+if display_selection<=2 || display_selection>=7
+    return;
+end
+[x, y] = ginput(1);
+child_handles = allchild(handles.bisp);
+for i = 1:size(child_handles,1)    
+    if(strcmp(get(child_handles(i),'Type'),'line'))
+        xdat = get(child_handles(i),'XData');
+        mark = get(child_handles(i),'Marker');
+        if(length(xdat) == 1 && strcmp(mark,'*'))
+            delete(child_handles(i))
+        end
+    end
+end
+
+hold(handles.bisp,'on');
+plot(handles.bisp, x, y, 'r*')
+set(handles.freq_1,'String',x);
+set(handles.freq_2,'String',y);
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+function file_Callback(hObject, eventdata, handles)
+%Loading data
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+function csv_read_Callback(hObject, eventdata, handles)
+%Read csv file
+    set(handles.status,'String','Importing Signal...');
+    
+    sig = read_from_csv();
+    fs = str2double(get(handles.sampling_freq,'String')); 
+    
+    data = guidata(hObject);
+    data.sig = sig;   
+    time = 1:size(sig,2);
+    time = time./fs;
+    data.time_axis = time;
+    guidata(hObject,data);    
+    
+    
+    time = 1:size(handles.sig,2);
+    time = time./fs;          
+    handles.time_axis = time;
+    plot(handles.time_series_1, time, handles.sig(1,:));%Plotting the time_series part afte calculation of appropriate limits
+    xlim(handles.time_series_1,[0,size(handles.sig,2)./fs]);
+    ylabel(handles.time_series_1,'Signal 1');
+    
+    
+    plot(handles.time_series_2, time, handles.sig(2,:));%Plotting the time_series part afte calculation of appropriate limits
+    xlim(handles.time_series_2,[0,size( handles.sig,2)./fs]);
+    xlabel(handles.time_series_2,'Time (s)');
+    ylabel(handles.time_series_2,'Signal 2');  
+    linkaxes([handles.time_series_1 handles.time_series_2],'x');
+        
+    refresh_limits_Callback(handles.refresh_limits, eventdata, handles);%updates the values in the box
+    
+    guidata(hObject,handles);
+    preprocess_Callback(handles.preprocess, eventdata, handles);%plots the detrended curve
+    guidata(hObject,handles);
+    set(handles.status,'String','Select Data And Continue With Wavelet Transform'); 
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+function mat_read_Callback(hObject, eventdata, handles)
+%Read mat file    
+    set(handles.status,'String','Importing Signal...');
+    handles.sig = read_from_mat(); 
+    handles.sig = struct2cell(handles.sig);
+    handles.sig = cell2mat(handles.sig);
+    fs = str2double(get(handles.sampling_freq,'String')); 
+ 
+    time = 1:size(handles.sig,2);
+    time = time./fs;          
+    handles.time_axis = time;
+    plot(handles.time_series_1, time, handles.sig(1,:));%Plotting the time_series part afte calculation of appropriate limits
+    xlim(handles.time_series_1,[0,size(handles.sig,2)./fs]);
+    ylabel(handles.time_series_1,'Signal 1');
+    
+    
+    plot(handles.time_series_2, time, handles.sig(2,:));%Plotting the time_series part afte calculation of appropriate limits
+    xlim(handles.time_series_2,[0,size( handles.sig,2)./fs]);
+    xlabel(handles.time_series_2,'Time (s)');
+    ylabel(handles.time_series_2,'Signal 2');  
+    linkaxes([handles.time_series_1 handles.time_series_2],'x');
+        
+    refresh_limits_Callback(handles.refresh_limits, eventdata, handles);%updates the values in the box
+    
+    guidata(hObject,handles);
+    preprocess_Callback(handles.preprocess, eventdata, handles);%plots the detrended curve
+    guidata(hObject,handles);
+    set(handles.status,'String','Select Data And Continue With Wavelet Transform'); 
+    
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-LimitsREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+function xlim_Callback(hObject, eventdata, handles)
+%When the values of xlim are changed the graphs are updated
+    xl = csv_to_mvar(get(handles.xlim,'String'));
+    xlim(handles.time_series_1,xl);
+    xlim(handles.time_series_2,xl);
+    xlim(handles.plot_pp,xl);
+    t = xl(2) - xl(1);
+    set(handles.length,'String',t);
+
+function ylim_Callback(hObject, eventdata, handles)
+%When the values of ylim are changed the graphs are updated  
+    yl = csv_to_mvar(get(handles.ylim,'String'));
+    ylim(handles.time_series_1,yl);
+    ylim(handles.time_series_2,yl);
+
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-Updating Value of limits LimitsREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+function refresh_limits_Callback(hObject, eventdata, handles)
+%Calcualtes limits of the plot    
+    
+    x = get(handles.time_series_1,'xlim');
+    xlim(handles.plot_pp,x);
+    t = x(2) - x(1);
+    x = strcat(num2str(x(1)),' , ',num2str(x(2)));    
+    
+    y = get(handles.time_series_1,'ylim');
+    y = strcat(num2str(y(1)),' , ',num2str(y(2)));
+    
+    set(handles.xlim,'String',x);
+    set(handles.ylim,'String',y);
+    set(handles.length,'String',t);
+    
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-Zoom UpdatingREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+function zoom_in_OffCallback(hObject, eventdata, handles)
+%Refreshes the limit values right after the tool is deselected
+    x = get(handles.time_series_1,'xlim');
+    xlim(handles.plot_pp,x);
+    t = x(2) - x(1);
+    x = strcat(num2str(x(1)),' , ',num2str(x(2)));    
+    
+    y = get(handles.time_series_1,'ylim');
+    y = strcat(num2str(y(1)),' , ',num2str(y(2)));
+    
+    set(handles.xlim,'String',x);
+    set(handles.ylim,'String',y);
+    set(handles.length,'String',t);
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-Zoom UpdatingREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+function zoom_out_OffCallback(hObject, eventdata, handles)
+%Refreshes the limit values right after the tool is deselected
+    x = get(handles.time_series_1,'xlim');
+    xlim(handles.plot_pp,x);
+    t = x(2) - x(1);
+    x = strcat(num2str(x(1)),' , ',num2str(x(2)));    
+    
+    y = get(handles.time_series_1,'ylim');
+    y = strcat(num2str(y(1)),' , ',num2str(y(2)));
+    
+    set(handles.xlim,'String',x);
+    set(handles.ylim,'String',y);
+    set(handles.length,'String',t);
+    
+function plot_type_SelectionChangeFcn(hObject, eventdata, handles)
+%deciding which plot
+    switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
+        case 'power'
+            plot_type = 1;
+        case 'amp'
+            plot_type = 2;
+    end
+    
+    handles.plot_type = plot_type;    
+    guidata(hObject,handles);
+    display_selection = get(handles.display_type,'Value');
+    if display_selection<=2 || display_selection>=7
+        display_type_Callback(handles.display_type, eventdata, handles)
+        guidata(hObject,handles); 
+    end
+    
+
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHSaving FilesREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+function save_Callback(hObject, eventdata, handles)
+%Honestly you're just here because I don't know how to get rid of you
+
+function save_3dplot_Callback(hObject, eventdata, handles)
+%Saves the 3d plot
+    Fig = figure;
+    copyobj(handles.plot3d, Fig);
+    Fig = tightfig(Fig);
+
+function save_power_plot_Callback(hObject, eventdata, handles)
+%Saves the power plot
+    Fig = figure;
+    copyobj(handles.plot_pow, Fig);
+    Fig = tightfig(Fig);
+
+function save_pow_arr_Callback(hObject, eventdata, handles)
+%Saves the avg power array
+    [FileName,PathName] = uiputfile
+    save_location = strcat(PathName,FileName)
+    data = guidata(hObject);
+    pow_arr = data.pow_arr;
+    save(save_location,'pow_arr');
+
+function save_wt_Callback(hObject, eventdata, handles)
+%Saves the wavelet transform
+    [FileName,PathName] = uiputfile
+    save_location = strcat(PathName,FileName)
+    WT = handles.WT;
+    freqarr = handles.freqarr;
+    save(save_location,'freqarr','-v7.3');
+    save(save_location,'WT','-v7.3');%Sometimes the compression is faulty
+
+function detrend_signal_popup_Callback(hObject, eventdata, handles)
+%Detrends the signal plots the chosen one
+    cla(handles.plot_pp,'reset');
+    set(handles.plot_pp,'fontunits','normalized');
+    preprocess_Callback(handles.preprocess, eventdata, handles);
+
+##### SOURCE END #####
+--></body></html>
