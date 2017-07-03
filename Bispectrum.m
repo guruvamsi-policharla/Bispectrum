@@ -495,6 +495,9 @@ elseif display_selection == 3 || display_selection == 4 || display_selection == 
         end
         set(handles.bisp, 'yscale','log','xscale','log');
         grid(handles.bisp,'on');
+        handles.bisp.GridAlpha = .7; 
+        handles.bisp.MinorGridAlpha = .7; 
+        handles.bisp.Layer = 'top';
         idx_first = find(sum(~isnan(handles.bxxx),1) > 0, 1 ,'first');
         idx_last = find(sum(~isnan(handles.bxxx),1) > 0, 1 , 'last');      
         xlim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
@@ -511,18 +514,18 @@ elseif display_selection == 3 || display_selection == 4 || display_selection == 
 elseif display_selection == 7 && isfield(handles,'WT')
     %Plotting all plots
         clear_pane_axes(handles.wt_pane);    
-        position = [.08 .58 .22 .40];
+        position = [.08 .56 .22 .40];
         handles.bispxxx = axes('Parent',handles.wt_pane,'position',position);
-        position = [.35 .58 .22 .40];
+        position = [.35 .56 .22 .40];
         handles.bispxpp = axes('Parent',handles.wt_pane,'position',position);
-        position = [.08 .12 .22 .40];
+        position = [.08 .11 .22 .40];
         handles.bisppxx = axes('Parent',handles.wt_pane,'position',position);
-        position = [.35 .12 .22 .40];
+        position = [.35 .11 .22 .40];
         handles.bispppp = axes('Parent',handles.wt_pane,'position',position);
         
-        position = [.64 .58 .34 .40];
+        position = [.64 .56 .34 .40];
         handles.wt_1 = axes('Parent',handles.wt_pane,'position',position);        
-        position = [.64 .12 .34 .40];
+        position = [.64 .11 .34 .40];
         handles.wt_2 = axes('Parent',handles.wt_pane,'position',position);
         
         pcolor(handles.bispxxx, handles.freqarr, handles.freqarr, handles.bxxx)
@@ -543,7 +546,8 @@ elseif display_selection == 7 && isfield(handles,'WT')
         ylabel(handles.wt_1,'Frequency (Hz)');
         xlabel(handles.wt_2,'Time (s)');
         ylabel(handles.wt_2,'Frequency (Hz)');
-        
+        title(handles.wt_1,'Signal 1','fontunits','normalized','fontsize',0.07);
+        title(handles.wt_2,'Signal 2','fontunits','normalized','fontsize',0.07);
         idx_first = find(sum(~isnan(handles.bxxx),1) > 0, 1 ,'first');
         idx_last = find(sum(~isnan(handles.bxxx),1) > 0, 1 , 'last');      
         
@@ -551,20 +555,33 @@ elseif display_selection == 7 && isfield(handles,'WT')
         for i = 4:size(child_handles,1)
             if(strcmp(get(child_handles(i),'Type'),'axes'))    
                 shading(child_handles(i),'interp');
-                set(child_handles(i),'yscale','log');
-                set(child_handles(i),'xscale','log');
+                set(child_handles(i),'yscale','log','xscale','log');
+              
                 xlim(child_handles(i),[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
                 ylim(child_handles(i),[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
             end
         end   
+        for i = 1:size(child_handles,1)
+            if(strcmp(get(child_handles(i),'Type'),'axes'))    
+                grid(child_handles(i),'on');  
+                grid(child_handles(i),'minor'); 
+                child_handles(i).GridAlpha = .7; 
+                child_handles(i).MinorGridAlpha = .7; 
+            end
+        end 
+                        
         set(handles.wt_1,'yscale','log','ylim',[handles.freqarr(idx_first) handles.freqarr(idx_last)], 'xlim',[time_axis(1) time_axis(end)],...
-        'zdir','reverse');
+        'zdir','reverse','xticklabel',[]);
         set(handles.wt_2,'yscale','log','ylim',[handles.freqarr(idx_first) handles.freqarr(idx_last)], 'xlim',[time_axis(1) time_axis(end)],...
         'zdir','reverse');
-        ylabel(handles.bispxxx,'Frequency(Hz)');
-        ylabel(handles.bisppxx,'Frequency(Hz)');
-        xlabel(handles.bisppxx,'Frequency(Hz)');
-        xlabel(handles.bispppp,'Frequency(Hz)');
+        title(handles.bispxxx,'bxxx','fontunits','normalized','fontsize',0.07);
+        title(handles.bispppp,'bppp','fontunits','normalized','fontsize',0.07);
+        title(handles.bisppxx,'bpxx','fontunits','normalized','fontsize',0.07);
+        title(handles.bispxpp,'bxpp','fontunits','normalized','fontsize',0.07);
+        ylabel(handles.bispxxx,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
+        ylabel(handles.bisppxx,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
+        xlabel(handles.bisppxx,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
+        xlabel(handles.bispppp,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
         guidata(hObject,handles);
 else 
     error('Calculate Before Plotting');
