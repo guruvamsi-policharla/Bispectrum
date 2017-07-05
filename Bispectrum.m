@@ -244,7 +244,7 @@ function preprocess_Callback(hObject, eventdata, handles)
     fs = str2double(get(handles.sampling_freq,'String'));
     fmax = str2double(get(handles.max_freq,'String'));
     fmin = str2double(get(handles.min_freq,'String'));
-    
+    cla(handles.plot_pp,'reset');
     contents = cellstr(get(handles.detrend_signal_popup,'String'));
     i = contents{get(handles.detrend_signal_popup,'Value')};
     i = str2double(i);
