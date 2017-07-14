@@ -34,7 +34,7 @@ function varargout = Bispectrum(varargin)
 
 % Edit the above text to modify the response to help Bispectrum
 
-% Last Modified by GUIDE v2.5 30-Jun-2017 17:38:59
+% Last Modified by GUIDE v2.5 14-Jul-2017 12:46:49
 %*************************************************************************%
 %                BEGIN initialization code - DO NOT EDIT                  %
 %                ----------------------------------------                 %
@@ -281,6 +281,13 @@ function preprocess_Callback(hObject, eventdata, handles)
     
     %legend(handles.plot_pp,'Original','Pre-Processed','Location','Best');
     xlim(handles.plot_pp,[0,size(sig,2)./fs]);
+    
+function detrend_signal_popup_Callback(hObject, eventdata, handles)
+%Detrends the signal plots the chosen one
+cla(handles.plot_pp,'reset');
+set(handles.plot_pp,'fontunits','normalized');
+preprocess_Callback(handles.preprocess, eventdata, handles);
+
 %-------------------------------------------------------------------------    
 
 function wavlet_transform_Callback(hObject, eventdata, handles)
@@ -391,13 +398,14 @@ function wavlet_transform_Callback(hObject, eventdata, handles)
     end
     
     %Calculating the Bispectrum
-    [handles.bxxx, handles.bppp, handles.bpxx, handles.bxpp] = bispectrum(sig(1,:), sig(2,:),...
+    [handles.bispxxx, handles.bispppp, handles.bisppxx, handles.bispxpp] = bispectrum(sig(1,:), sig(2,:),...
         handles.WT{1,1}, handles.WT{2,1}, handles.freqarr, .01, ord, fs, fc);
     
     handles.sig_cut = sig;
     
-    guidata(hObject,handles);    
-    display_type_Callback(handles.display_type, eventdata, handles);
+    guidata(hObject,handles);   
+    drawnow;
+    display_type_Callback(handles.display_type, eventdata, handles);    
     guidata(hObject,handles);
     
     set(handles.display_type,'Enable','on');
@@ -427,19 +435,31 @@ else
     n = 1;
 end
 
+%Clearing all axes
+child_handles = allchild(handles.wt_pane);
+for i = 1:size(child_handles,1)
+    if strcmp(get(child_handles(i),'type'),'axes')
+        cla(child_handles(i),'reset');
+        set(child_handles(i),'visible','off');
+    end
+end
+
 if (display_selection == 1 || display_selection == 2) && isfield(handles,'WT')
     
-    clear_pane_axes(handles.wt_pane);
+    %clear_pane_axes(handles.wt_pane);
     %Deciding the plot type
         
         %Actual Plotting    
         %-------------------------Surf Plot------------------------------------
         
-        position = [0.06 0.122 0.6 0.849];
-        handles.plot3d = subplot(1,3,[1 2],'Parent',handles.wt_pane,'position',position);
-        position = [.78 .122 .196 .849];
-        handles.plot_pow = subplot(1,3,3,'Parent',handles.wt_pane,'position',position);
-        
+%         position = [0.06 0.122 0.6 0.849];
+%         handles.plot3d = subplot(1,3,[1 2],'Parent',handles.wt_pane,'position',position);
+%         position = [.78 .122 .196 .849];
+%         handles.plot_pow = subplot(1,3,3,'Parent',handles.wt_pane,'position',position);
+        set(handles.plot3d,'visible','on');
+        set(handles.plot_pow,'visible','on');
+        uistack(handles.plot3d,'top');
+        uistack(handles.plot_pow,'top');
         if(handles.plot_type == 1)           
             handles.peak_value = max(handles.pow_WT{display_selection,1}(:))+.1;
             pcolor(handles.plot3d, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{display_selection,1}(1:end,1:n:end)); 
@@ -477,29 +497,37 @@ if (display_selection == 1 || display_selection == 2) && isfield(handles,'WT')
         %set(handles.plot3d,'fontunits','normalized');
 elseif display_selection == 3 || display_selection == 4 || display_selection == 5 || display_selection == 6
      %Plotting bispectrum   
-        clear_pane_axes(handles.wt_pane);    
-        position = [0.06 0.12 0.432 0.8];
-        handles.bisp = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');            
-        position = [.56 .55 .42 .42];
-        handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');
-        position = [.56 .09 .42 .42];
-        handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');
+        %clear_pane_axes(handles.wt_pane);    
+%         position = [0.06 0.12 0.432 0.8];
+%         handles.bisp = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');            
+%         position = [.56 .55 .42 .42];
+%         handles.bisp_amp_axis = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');
+%         position = [.56 .09 .42 .42];
+%         handles.bisp_phase_axis = axes('Parent',handles.wt_pane,'position',position,'fontunits','normalized');     
+        set(handles.bisp,'visible','on');
+        set(handles.bisp_amp_axis,'visible','on');
+        set(handles.bisp_phase_axis,'visible','on');
+        uistack(handles.bisp,'top');
+        uistack(handles.bisp_amp_axis,'top');
+        uistack(handles.bisp_phase_axis,'top');
+        
         if display_selection == 3
-            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxxx) 
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bispxxx) 
         elseif display_selection == 4
-            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bppp)
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bispppp)
         elseif display_selection == 5
-            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bxpp)
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bispxpp)
         elseif display_selection == 6
-            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bpxx)
+            pcolor(handles.bisp, handles.freqarr, handles.freqarr, handles.bisppxx)
         end
+        
         set(handles.bisp, 'yscale','log','xscale','log');
         grid(handles.bisp,'on');
         handles.bisp.GridAlpha = .7; 
         handles.bisp.MinorGridAlpha = .7; 
         handles.bisp.Layer = 'top';
-        idx_first = find(sum(~isnan(handles.bxxx),1) > 0, 1 ,'first');
-        idx_last = find(sum(~isnan(handles.bxxx),1) > 0, 1 , 'last');      
+        idx_first = find(sum(~isnan(handles.bispxxx),1) > 0, 1 ,'first');
+        idx_last = find(sum(~isnan(handles.bispxxx),1) > 0, 1 , 'last');      
         xlim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);
         ylim(handles.bisp,[handles.freqarr(idx_first) handles.freqarr(idx_last)]);               
         xlabel(handles.bisp,'Frequency (Hz)');
@@ -513,25 +541,34 @@ elseif display_selection == 3 || display_selection == 4 || display_selection == 
         
 elseif display_selection == 7 && isfield(handles,'WT')
     %Plotting all plots
-        clear_pane_axes(handles.wt_pane);    
-        position = [.08 .56 .22 .40];
-        handles.bispxxx = axes('Parent',handles.wt_pane,'position',position);
-        position = [.35 .56 .22 .40];
-        handles.bispxpp = axes('Parent',handles.wt_pane,'position',position);
-        position = [.08 .11 .22 .40];
-        handles.bisppxx = axes('Parent',handles.wt_pane,'position',position);
-        position = [.35 .11 .22 .40];
-        handles.bispppp = axes('Parent',handles.wt_pane,'position',position);
+        %clear_pane_axes(handles.wt_pane);    
+%         position = [.08 .56 .22 .40];
+%         handles.bispxxx_axis = axes('Parent',handles.wt_pane,'position',position);
+%         position = [.35 .56 .22 .40];
+%         handles.bispxpp_axis = axes('Parent',handles.wt_pane,'position',position);
+%         position = [.08 .11 .22 .40];
+%         handles.bisppxx_axis = axes('Parent',handles.wt_pane,'position',position);
+%         position = [.35 .11 .22 .40];
+%         handles.bispppp_axis = axes('Parent',handles.wt_pane,'position',position);
         
-        position = [.64 .56 .34 .40];
-        handles.wt_1 = axes('Parent',handles.wt_pane,'position',position);        
-        position = [.64 .11 .34 .40];
-        handles.wt_2 = axes('Parent',handles.wt_pane,'position',position);
+%         position = [.64 .56 .34 .40];
+%         handles.wt_1 = axes('Parent',handles.wt_pane,'position',position);        
+%         position = [.64 .11 .34 .40];
+%         handles.wt_2 = axes('Parent',handles.wt_pane,'position',position);
+        set(handles.bispxxx_axis,'visible','on');
+        set(handles.bispppp_axis,'visible','on');
+        set(handles.bispxpp_axis,'visible','on');
+        set(handles.bisppxx_axis,'visible','on');
+
+        uistack(handles.bispxxx_axis,'top');
+        uistack(handles.bispppp_axis,'top');
+        uistack(handles.bispxpp_axis,'top');
+        uistack(handles.bisppxx_axis,'top');
         
-        pcolor(handles.bispxxx, handles.freqarr, handles.freqarr, handles.bxxx)
-        pcolor(handles.bispppp, handles.freqarr, handles.freqarr, handles.bppp)
-        pcolor(handles.bisppxx, handles.freqarr, handles.freqarr, handles.bpxx)
-        pcolor(handles.bispxpp, handles.freqarr, handles.freqarr, handles.bxpp)
+        pcolor(handles.bispxxx_axis, handles.freqarr, handles.freqarr, handles.bispxxx)
+        pcolor(handles.bispppp_axis, handles.freqarr, handles.freqarr, handles.bispppp)
+        pcolor(handles.bisppxx_axis, handles.freqarr, handles.freqarr, handles.bisppxx)
+        pcolor(handles.bispxpp_axis, handles.freqarr, handles.freqarr, handles.bispxpp)
         
         if(handles.plot_type == 1)           
             pcolor(handles.wt_1, time_axis(1:n:end) ,handles.freqarr, handles.pow_WT{1,1}(1:end,1:n:end));
@@ -548,11 +585,11 @@ elseif display_selection == 7 && isfield(handles,'WT')
         ylabel(handles.wt_2,'Frequency (Hz)');
         title(handles.wt_1,'Signal 1','fontunits','normalized','fontsize',0.07);
         title(handles.wt_2,'Signal 2','fontunits','normalized','fontsize',0.07);
-        idx_first = find(sum(~isnan(handles.bxxx),1) > 0, 1 ,'first');
-        idx_last = find(sum(~isnan(handles.bxxx),1) > 0, 1 , 'last');      
+        idx_first = find(sum(~isnan(handles.bispxxx),1) > 0, 1 ,'first');
+        idx_last = find(sum(~isnan(handles.bispxxx),1) > 0, 1 , 'last');      
         
-        child_handles = allchild(handles.wt_pane);
-        for i = 4:size(child_handles,1)
+        child_handles = [handles.bispxxx_axis; handles.bispppp_axis; handles.bispxpp_axis; handles.bisppxx_axis]
+        for i = 1:size(child_handles,1)
             if(strcmp(get(child_handles(i),'Type'),'axes'))    
                 shading(child_handles(i),'interp');
                 set(child_handles(i),'yscale','log','xscale','log');
@@ -574,15 +611,16 @@ elseif display_selection == 7 && isfield(handles,'WT')
         'zdir','reverse','xticklabel',[]);
         set(handles.wt_2,'yscale','log','ylim',[handles.freqarr(idx_first) handles.freqarr(idx_last)], 'xlim',[time_axis(1) time_axis(end)],...
         'zdir','reverse');
-        title(handles.bispxxx,'bxxx','fontunits','normalized','fontsize',0.07);
-        title(handles.bispppp,'bppp','fontunits','normalized','fontsize',0.07);
-        title(handles.bisppxx,'bpxx','fontunits','normalized','fontsize',0.07);
-        title(handles.bispxpp,'bxpp','fontunits','normalized','fontsize',0.07);
-        ylabel(handles.bispxxx,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
-        ylabel(handles.bisppxx,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
-        xlabel(handles.bisppxx,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
-        xlabel(handles.bispppp,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
+        title(handles.bispxxx_axis,'bxxx','fontunits','normalized','fontsize',0.07);
+        title(handles.bispppp_axis,'bppp','fontunits','normalized','fontsize',0.07);
+        title(handles.bisppxx_axis,'bpxx','fontunits','normalized','fontsize',0.07);
+        title(handles.bispxpp_axis,'bxpp','fontunits','normalized','fontsize',0.07);
+        ylabel(handles.bispxxx_axis,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
+        ylabel(handles.bisppxx_axis,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
+        xlabel(handles.bisppxx_axis,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
+        xlabel(handles.bispppp_axis,'Frequency(Hz)','fontunits','normalized','fontsize',0.06);
         guidata(hObject,handles);
+        drawnow;
 else 
     error('Calculate Before Plotting');
 end
@@ -636,9 +674,9 @@ display_selection = get(handles.display_type,'Value');
         grid(handles.bisp_phase_axis,'on');
         
         [M,I] = max(handles.biamp);
-        text(handles.bisp_amp_axis,time_axis(I),M,num2str(size(list,1)));  
+%         text(handles.bisp_amp_axis,time_axis(I),M,num2str(size(list,1)));  
         [M,I] = max(handles.biphase);
-        text(handles.bisp_phase_axis,time_axis(I),M,num2str(size(list,1)));  
+%         text(handles.bisp_phase_axis,time_axis(I),M,num2str(size(list,1)));  
         
         set(handles.bisp_amp_axis,'xticklabel',[]);
         ylabel(handles.bisp_amp_axis,'Biamplitdue');
@@ -768,9 +806,9 @@ switch eventdata.Key
             grid(handles.bisp_phase_axis,'on');
             
             [M,I] = max(handles.biamp);
-            text(handles.bisp_amp_axis,time_axis(I), M,num2str(frequency_selected(i)));  
+%             text(handles.bisp_amp_axis,time_axis(I), M,num2str(frequency_selected(i)));  
             [M,I] = max(handles.biphase);
-            text(handles.bisp_phase_axis,time_axis(I), M,num2str(frequency_selected(i)));  
+%             text(handles.bisp_phase_axis,time_axis(I), M,num2str(frequency_selected(i)));  
             set(handles.bisp_amp_axis,'fontunits','normalized','fontsize',0.05,'xticklabel',[]);
             set(handles.bisp_phase_axis,'fontunits','normalized','fontsize',0.05);
             ylabel(handles.bisp_amp_axis,'Biamplitdue');
@@ -1080,39 +1118,27 @@ function plot_type_SelectionChangeFcn(hObject, eventdata, handles)
 
 % ----------------------------------------Saving Files---------------
 function save_Callback(hObject, eventdata, handles)
+function save_figure_Callback(hObject, eventdata, handles)
+function save_mat_Callback(hObject, eventdata, handles)
+function save_csv_Callback(hObject, eventdata, handles)
 %Honestly you're just here because I don't know how to get rid of you
 
 function save_3dplot_Callback(hObject, eventdata, handles)
 %Saves the 3d plot
-    Fig = figure;
-    copyobj(handles.plot3d, Fig);
-    Fig = tightfig(Fig);
+Fig = figure;
+ax = copyobj(handles.plot3d, Fig);
+set(ax,'Units', 'normalized', 'Position', [0.1,0.2,.85,.7]);
+set(Fig,'Units','normalized','Position', [0.2 0.2 0.5 0.5]);
 
 function save_power_plot_Callback(hObject, eventdata, handles)
 %Saves the power plot
-    Fig = figure;
-    copyobj(handles.plot_pow, Fig);
-    Fig = tightfig(Fig);
+Fig = figure;
+ax = copyobj(handles.plot_pow, Fig);
+view(90,-90);
+set(ax,'Units', 'normalized', 'Position', [0.1,0.2,.85,.7], 'YTickMode', 'auto', 'YTickLabelMode', 'auto');
+set(Fig,'Units','normalized','Position', [0.3 0.3 0.3 0.3]);
 
-function save_pow_arr_Callback(hObject, eventdata, handles)
-%Saves the avg power array
-    [FileName,PathName] = uiputfile
-    save_location = strcat(PathName,FileName)
-    data = guidata(hObject);
-    pow_arr = data.pow_arr;
-    save(save_location,'pow_arr');
 
-function save_wt_Callback(hObject, eventdata, handles)
-%Saves the wavelet transform
-    [FileName,PathName] = uiputfile
-    save_location = strcat(PathName,FileName)
-    WT = handles.WT;
-    freqarr = handles.freqarr;
-    save(save_location,'freqarr','-v7.3');
-    save(save_location,'WT','-v7.3');%Sometimes the compression is faulty
 
-function detrend_signal_popup_Callback(hObject, eventdata, handles)
-%Detrends the signal plots the chosen one
-    cla(handles.plot_pp,'reset');
-    set(handles.plot_pp,'fontunits','normalized');
-    preprocess_Callback(handles.preprocess, eventdata, handles);
+
+
