@@ -34,7 +34,7 @@ function varargout = Bispectrum(varargin)
 
 % Edit the above text to modify the response to help Bispectrum
 
-% Last Modified by GUIDE v2.5 14-Jul-2017 12:46:49
+% Last Modified by GUIDE v2.5 14-Jul-2017 17:22:50
 %*************************************************************************%
 %                BEGIN initialization code - DO NOT EDIT                  %
 %                ----------------------------------------                 %
@@ -1138,7 +1138,20 @@ view(90,-90);
 set(ax,'Units', 'normalized', 'Position', [0.1,0.2,.85,.7], 'YTickMode', 'auto', 'YTickLabelMode', 'auto');
 set(Fig,'Units','normalized','Position', [0.3 0.3 0.3 0.3]);
 
+function save_bisp_Callback(hObject, eventdata, handles)
+Fig = figure;
+ax = copyobj(handles.bisp, Fig);
+set(ax,'Units', 'normalized', 'Position', [0.1,0.2,.85,.7], 'YTickMode', 'auto', 'YTickLabelMode', 'auto');
+set(Fig,'Units','normalized','Position', [0.3 0.3 0.3 0.3]);
 
+function save_biamp_Callback(hObject, eventdata, handles)
+Fig = figure;
+ax = copyobj(handles.bisp_amp_axis, Fig);
+set(ax,'Units', 'normalized', 'Position', [0.1,0.2,.85,.7], 'YTickMode', 'auto', 'YTickLabelMode', 'auto');
+set(Fig,'Units','normalized','Position', [0.3 0.3 0.3 0.3]);
 
-
-
+function save_biphase_Callback(hObject, eventdata, handles)
+Fig = figure;
+ax = copyobj(handles.bisp_phase_axis, Fig);
+set(ax,'Units', 'normalized', 'Position', [0.1,0.2,.85,.7], 'YTickMode', 'auto', 'YTickLabelMode', 'auto');
+set(Fig,'Units','normalized','Position', [0.3 0.3 0.3 0.3]);
